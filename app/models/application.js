@@ -2,10 +2,9 @@ var mongoose = require('mongoose'),
   Schema = mongoose.Schema;
 
 var ApplicationSchema = new Schema({
-  name: String,
-  secret: String,
+  name: {type: String, required: "name is required"},
+  secret: {type: String, required: "secret is required"},
   active: Boolean,
-  url: String,
   send:{
     limit: Number,
     count: Number

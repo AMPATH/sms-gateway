@@ -14,13 +14,20 @@ module.exports = function (grunt) {
 
   grunt.initConfig({
     jshint: {
-      all: ['app/**/*.js',"config/express.js"]
+      all: ['app/**/*.js','config/express.js','test/**/*.js']
+    },
+    env: {
+      dev: {
+        NODE_ENV : 'development'
+      },
+      test: {
+        NODE_ENV : 'test'
+      }
     },
     mochaTest: {
      test: {
        options: {
          reporter: 'spec',
-         captureFile: 'results.txt', // Optionally capture the reporter output to a file
          quiet: false, // Optionally suppress output to standard out (defaults to false)
          clearRequireCache: false // Optionally clear the require cache before running tests (defaults to false)
        },
@@ -86,5 +93,5 @@ module.exports = function (grunt) {
     'develop',
     'watch'
   ]);
-  grunt.registerTask('test',['mochaTest']);
+  grunt.registerTask('test',['jshint','env:test','mochaTest']);
 };
