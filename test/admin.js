@@ -10,9 +10,21 @@ var mongoose = require('mongoose'),
 describe('admin api', function(){
 
   it('get applications',function(done){
-    request(app)
-        .get('/admin/application')
-        .expect(200, done);
+
+    application = new Application({name: "App Name", secret: "Secret", active: true, send: {limit: 2000, count: 0}});
+    application.save(function(err){
+      expect(err).to.be(null);
+      request(app)
+          .get('/admin/application')
+          .expect(200)
+          .end(function(err, res){
+              if (err) return done(err);
+              expect(res.body).to.have.length(1);
+              expect(res.body[0].name).to.be("App Name");
+              done();
+          });
+    });
+
   });
 
 

@@ -9,7 +9,10 @@ module.exports = function (app) {
 };
 
 router.get('/application',function(req, res, next){
-  res.status(200).send("[]");
+  Application.find(function(err,applications){
+    if (err) return errorHandler(500,err,res);
+    res.status(200).json(applications);
+  });
 });
 
 
@@ -17,7 +20,7 @@ router.post('/application',function(req,res,next){
   application = new Application({name: req.body.name, secret: req.body.secret, active: true, send: {limit: 200000, count: 0}});
   application.save(function(err,app){
     if (err) return errorHandler(400,err,res);
-    res.status(201).send(app.toJSON());
+    res.status(201).json(app.toJSON());
   });
 });
 
