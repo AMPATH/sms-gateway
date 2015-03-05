@@ -14,9 +14,10 @@
     "glob": "~4.4.1",
     "method-override": "~2.3.0",
     "mongoose": "~3.8.20",
+    "mongoose-unique-validator": "~0.4.1",
     "morgan": "~1.5.0",
     "serve-favicon": "~2.2.0",
-    "underscore": "^1.8.2"
+    "underscore": "~1.8.2"
   },
   "devDependencies": {
     "expect.js": "~0.3.1",
@@ -24,13 +25,13 @@
     "grunt-contrib-jshint": "~0.11.0",
     "grunt-contrib-watch": "~0.6.1",
     "grunt-develop": "~0.4.0",
-    "grunt-env": "^0.4.4",
+    "grunt-env": "~0.4.4",
     "grunt-mocha-test": "~0.12.7",
     "load-grunt-tasks": "~3.1.0",
     "mocha": "~2.1.0",
     "request": "~2.53.0",
     "superagent": "~0.21.0",
-    "supertest": "^0.15.0",
+    "supertest": "~0.15.0",
     "time-grunt": "~1.1.0"
   }
 }
