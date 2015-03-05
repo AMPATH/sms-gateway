@@ -22,4 +22,32 @@ describe('Application Model', function(){
       done();
     });
   });
+
+  describe('secret',function(){
+    it('should match with valid secret',function(done){
+      application = new Application({name: "NewName", secret: "Secret123", active: true, send: {limit: 2000, count: 0}});
+      application.save(function(err,app){
+        expect(err).to.be(null);
+        app.compareSecret("Secret123",function(err,isMatch){
+          expect(err).to.be(null);
+          expect(isMatch).to.be(true);
+          done();
+        });
+      });
+    });
+
+    it('should not match with invalid secret',function(done){
+      application = new Application({name: "NewNamewithInvalid", secret: "Secret123", active: true, send: {limit: 2000, count: 0}});
+      application.save(function(err,app){
+        expect(err).to.be(null);
+        app.compareSecret("Secret1",function(err,isMatch){
+          expect(err).to.be(null);
+          expect(isMatch).to.be(false);
+          done();
+        });
+      });
+    });
+  });
+
+
 });
