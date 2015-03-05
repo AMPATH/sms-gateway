@@ -14,10 +14,10 @@ router.get('/application',function(req, res, next){
 
 
 router.post('/application',function(req,res,next){
-  application = new Application({name: req.body.name, secret: req.body.secret, active: true, send: {limit: 2000, count: 0}});
-  application.save(function(err){
-    if (err) return errorHandler(500,err,res);
-    res.status(201).send("created");
+  application = new Application({name: req.body.name, secret: req.body.secret, active: true, send: {limit: 200000, count: 0}});
+  application.save(function(err,app){
+    if (err) return errorHandler(400,err,res);
+    res.status(201).send(app.toJSON());
   });
 });
 
