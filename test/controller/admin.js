@@ -7,14 +7,16 @@ var app = require('../../app.js');
 var mongoose = require('mongoose'),
     Application = mongoose.model('Application');
 
-describe('admin api', function(){
+
+
+describe('Admin Controller', function(){
+
   before(function(){
     Application.collection.remove(function(err){
-
     });
   });
 
-  it('get applications',function(done){
+  it('Get applications',function(done){
 
     application = new Application({name: "App Name", secret: "Secret", active: true, send: {limit: 2000, count: 0}});
     application.save(function(err){
@@ -33,10 +35,34 @@ describe('admin api', function(){
   });
 
 
+  describe('get application details',function(){
+    it('should return 404 for the application is invalid',function(done){
+      request(app)
+        .get('/admin/application/not_there')
+        .expect(404)
+        .expect("Unable to find application with name 'not_there'",done);
+    });
+
+    it('should return message details for valid request',function(done){
+      application = new Application({name: "app1", secret: "Secret", active: true, send: {limit: 2000, count: 0}});
+      application.save(function(err){
+        expect(err).to.be(null);
+        request(app)
+          .get('/admin/application/app1')
+          .expect(200)
+          .end(function(err, res){
+              if (err) return done(err);
+              expect(res.body.name).to.be("app1");
+              done();
+          });
+      });
+    });
+  });
+
+
   describe('create application',function(){
     after(function(){
       Application.collection.remove(function(err){
-
       });
     });
 

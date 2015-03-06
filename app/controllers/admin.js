@@ -8,6 +8,7 @@ module.exports = function (app) {
     app.use('/admin', router);
 };
 
+
 router.get('/application',function(req, res, next){
   Application.find(function(err,applications){
     if (err) return errorHandler(500,err,res);
@@ -21,6 +22,17 @@ router.post('/application',function(req,res,next){
   application.save(function(err,app){
     if (err) return errorHandler(400,err,res);
     res.status(201).json(app.toJSON());
+  });
+});
+
+router.get('/application/:name',function(req, res, next){
+  Application.findOne({name: req.params.name},function(err,application){
+    if (err) return errorHandler(404,err,res);
+    if(application){
+        return res.status(200).json(application);
+    }
+
+    return res.status(404).send("Unable to find application with name '"+req.params.name+"'");
   });
 });
 
