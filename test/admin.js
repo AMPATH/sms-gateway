@@ -8,6 +8,11 @@ var mongoose = require('mongoose'),
     Application = mongoose.model('Application');
 
 describe('admin api', function(){
+  before(function(){
+    Application.collection.remove(function(err){
+
+    });
+  });
 
   it('get applications',function(done){
 
@@ -20,7 +25,7 @@ describe('admin api', function(){
           .end(function(err, res){
               if (err) return done(err);
               expect(res.body).to.have.length(1);
-              expect(res.body[0].name).to.be("App Name");
+              expect(res.body[0].name).to.be("app name");
               done();
           });
     });
@@ -73,9 +78,9 @@ describe('admin api', function(){
         expect(err).to.be(null);
         request(app)
           .post('/admin/application')
-          .send({"name": "Unique Name","secret": "Secret"})
+          .send({"name": "Unique name","secret": "Secret"})
           .expect(400)
-          .expect("Application with name 'Unique Name' already exists.",done);
+          .expect("Application with name 'unique name' already exists.",done);
       });
     });
   });

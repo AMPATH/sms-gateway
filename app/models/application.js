@@ -14,7 +14,6 @@ var ApplicationSchema = new Schema({
   }
 });
 
-ApplicationSchema.plugin(uniqueValidator,{message: "Application with name '{VALUE}' already exists."});
 
 ApplicationSchema.virtual('date')
   .get(function(){
@@ -26,9 +25,21 @@ ApplicationSchema.methods.toJSON = function() {
   return _.omit(obj,"_id","__v","secret");
 };
 
+
+// Convert name to lowercase
+ApplicationSchema.pre('validate', function (next, data) {
+  if (this.name) {
+      this.name = this.name.toLowerCase();
+  }
+  next();
+});
+
+// Middleware for encrypting secret key
 ApplicationSchema.pre('save',function(next){
   var app = this;
+
   if (!app.isModified('secret')) return next();
+
   bcrypt.genSalt(10,function(err,salt){
     if (err) return next(err);
     bcrypt.hash(app.secret,salt,function(err,hash){
@@ -39,6 +50,9 @@ ApplicationSchema.pre('save',function(next){
 
   });
 });
+
+
+ApplicationSchema.plugin(uniqueValidator,{message: "Application with name '{VALUE}' already exists."});
 
 ApplicationSchema.methods.compareSecret = function(candidateSecret, cb) {
     bcrypt.compare(candidateSecret, this.secret, function(err, isMatch) {
