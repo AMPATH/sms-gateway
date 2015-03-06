@@ -2,7 +2,7 @@ var request = require('supertest'),
     expect  = require('expect.js'),
     express = require('express');
 
-var app = require('../app.js');
+var app = require('../../app.js');
 
 var mongoose = require('mongoose'),
     Application = mongoose.model('Application');
