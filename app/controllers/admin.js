@@ -36,6 +36,41 @@ router.get('/application/:name',function(req, res, next){
   });
 });
 
+//POST /admin/application/{appName}/disable
+
+router.post('/application/:name/disable', function(req,res,next){
+    var query = {name: req.params.name, active: 'true'};
+    var update = {active: 'false'};
+    var options = {new: true};
+
+    Application.findOneAndUpdate(query, update, options, function(err, application) {
+      if (err) {
+        return errorHandler(404,err,res);
+      }
+      if(application){
+              return res.status(200).json(application);
+      }
+      return res.status(404).send("Unable to find and disable application '"+req.params.name+"'");
+    });
+});
+
+//POST /admin/application/{appName}/enable
+
+router.post('/application/:name/enable', function(req,res,next){
+    var query = {name: req.params.name, active: 'false'};
+    var update = {active: 'true'};
+    var options = {new: true};
+
+    Application.findOneAndUpdate(query, update, options, function(err, application) {
+      if (err) {
+        return errorHandler(404,err,res);
+      }
+      if(application){
+              return res.status(200).json(application);
+      }
+      return res.status(404).send("Unable to find and enable application '"+req.params.name+"'");
+    });
+});
 
 function errorHandler(code,err,res){
   var messages=err;
