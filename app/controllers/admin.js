@@ -16,7 +16,7 @@ var auth = function (req, res, next) {
   var user = basicAuth(req);
 
   if (user) {
-    User.authorize(user.name,user.password,function(err,usr){
+    User.authorize(user.name,user.pass,function(err,usr){
       if (err) {
         res.set('WWW-Authenticate', 'Basic realm=Authorization Required');
         return res.status(401);
