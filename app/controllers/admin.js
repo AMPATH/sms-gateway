@@ -95,6 +95,29 @@ router.post('/application/:name/enable', function(req,res,next){
     });
 });
 
+//POST /admin/application/{appName}/limit
+
+router.post('/application/:name/limit', function(req,res,next){
+    var query = {name: req.params.name};
+    var newLimit = req.body.limit;
+    if(!isInteger(newLimit)){
+        return errorHandler(404,"Limit should be a number",res);
+    }
+    var update = {'send.limit': newLimit};
+    var options = {new: true};
+
+    Application.findOneAndUpdate(query, update, options, function(err, application) {
+      if (err) {
+        return errorHandler(404,err,res);
+      }
+      if(application){
+              return res.status(200).json(application);
+      }
+      return res.status(404).send("Unable to find and change sms limit for application '"+req.params.name+"'");
+    });
+});
+
+
 function errorHandler(code,err,res){
   var messages=err;
   if (typeof err.errors != 'undefined'){
@@ -103,4 +126,8 @@ function errorHandler(code,err,res){
     }).join();
   }
   res.status(code).send(messages);
+}
+
+function isInteger(x) {
+return (typeof x === 'number') && (Math.round(x) === x);
 }
