@@ -109,5 +109,71 @@ describe('Admin Controller', function(){
           .expect("Application with name 'unique name' already exists.",done);
       });
     });
-  });
+
+    it('disable an enabled application', function(done){
+          var expectedJson={
+                  "name": "enabled_application",
+                  "active": false,
+                  "send": {
+                     "limit": 2000,
+                     "count": 0
+                  }
+                };
+          application = new Application({name: "enabled_application", secret: "Secret", active: true, send: {limit: 2000, count: 0}});
+          application.save(function(err){
+            expect(err).to.be(null);
+            request(app)
+              .post('/admin/application/enabled_application/disable')
+              .send({"name": "enabled_application","secret": "Secret"})
+              .expect(200)
+              .expect(JSON.stringify(expectedJson),done);
+          });
+    });
+
+     it('fail disabling a disabled application', function(done){
+
+               application = new Application({name: "disabled_application", secret: "Secret", active: false, send: {limit: 2000, count: 0}});
+               application.save(function(err){
+                 expect(err).to.be(null);
+                 request(app)
+                   .post('/admin/application/disabled_application/disable')
+                   .send({"name": "disabled_application","secret": "Secret"})
+                   .expect(404)
+                   .expect("Unable to find and disable application 'disabled_application'",done);
+               });
+             });
+     });
+
+     it('enable a disabled application', function(done){
+               var expectedJson={
+                       "name": "new_disabled_application",
+                       "active": true,
+                       "send": {
+                          "limit": 2000,
+                          "count": 0
+                       }
+                     };
+               application = new Application({name: "new_disabled_application", secret: "Secret", active: false, send: {limit: 2000, count: 0}});
+               application.save(function(err){
+                 expect(err).to.be(null);
+                 request(app)
+                   .post('/admin/application/new_disabled_application/enable')
+                   .send({"name": "new_disabled_application","secret": "Secret"})
+                   .expect(200)
+                   .expect(JSON.stringify(expectedJson),done);
+               });
+     });
+
+     it('fail enabling a enabled application', function(done){
+
+                    application = new Application({name: "new_enabled_application", secret: "Secret", active: true, send: {limit: 2000, count: 0}});
+                    application.save(function(err){
+                      expect(err).to.be(null);
+                      request(app)
+                        .post('/admin/application/new_enabled_application/enable')
+                        .send({"name": "new_enabled_application","secret": "Secret"})
+                        .expect(404)
+                        .expect("Unable to find and enable application 'new_enabled_application'",done);
+                    });
+     });
 });
