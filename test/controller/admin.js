@@ -176,4 +176,53 @@ describe('Admin Controller', function(){
                         .expect("Unable to find and enable application 'new_enabled_application'",done);
                     });
      });
+
+     it('change the sms limit of an application', function(done){
+                var expectedJson={
+                            "name": "new_application_for_limit_test",
+                            "active": true,
+                            "send": {
+                               "limit": 5000,
+                               "count": 0
+                            }
+                          };
+                    application = new Application({name: "new_application_for_limit_test", secret: "Secret", active: true, send: {limit: 2000, count: 0}});
+                    application.save(function(err){
+                      expect(err).to.be(null);
+                      request(app)
+                        .post('/admin/application/new_application_for_limit_test/limit')
+                        .send({"name": "new_application_for_limit_test","secret": "Secret","limit": 5000 })
+                        .expect(200)
+                        .expect(JSON.stringify(expectedJson),done);
+                 });
+
+     });
+
+     it('attempt to change sms limit with a float should return error message', function(done){
+                         application = new Application({name: "new_application_for_float_limit_test", secret: "Secret", active: true, send: {limit: 2000, count: 0}});
+                         application.save(function(err){
+                           expect(err).to.be(null);
+                           request(app)
+                             .post('/admin/application/new_application_for_NaN_limit_test/limit')
+                             .send({"name": "new_application_for_NaN_limit_test","secret": "Secret","limit": 5000.89 })
+                             .expect(404)
+                             .expect("Limit should be a number",done);
+                      });
+
+          });
+
+     it('attempt to change sms limit with a NaN should return error message', function(done){
+                              application = new Application({name: "new_application_for_NaN_limit_test", secret: "Secret", active: true, send: {limit: 2000, count: 0}});
+                              application.save(function(err){
+                                expect(err).to.be(null);
+                                request(app)
+                                  .post('/admin/application/new_application_for_NaN_limit_test/limit')
+                                  .send({"name": "new_application_for_NaN_limit_test","secret": "Secret","limit": "sdjcaiuhfewh" })
+                                  .expect(404)
+                                  .expect("Limit should be a number",done);
+                           });
+
+               });
+
+
 });
