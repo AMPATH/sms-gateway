@@ -36,6 +36,7 @@ describe('Admin Controller', function(){
 
 
   describe('get application details',function(){
+
     it('should return 404 for the application is invalid',function(done){
       request(app)
         .get('/admin/application/not_there')
@@ -53,6 +54,22 @@ describe('Admin Controller', function(){
           .end(function(err, res){
               if (err) return done(err);
               expect(res.body.name).to.be("app1");
+              done();
+          });
+      });
+    });
+
+    it('should handle application names with spaces',function(done){
+      application = new Application({name: "app1 withspace", secret: "Secret", active: true, send: {limit: 2000, count: 0}});
+      application.save(function(err){
+        expect(err).to.be(null);
+        request(app)
+          .get('/admin/application/app1 withspace')
+          .expect(200)
+          .end(function(err, res){
+              if (err) return done(err);
+              console.log(res.body);
+              expect(res.body.name).to.be("app1 withspace");
               done();
           });
       });
