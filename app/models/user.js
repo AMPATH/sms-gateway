@@ -48,4 +48,24 @@ UserSchema.methods.comparePassword = function(candidatePassword, cb) {
     });
 };
 
+
+UserSchema.statics.authorize = function (username,password, cb) {
+  this.findOne({name: username},function(err,user){
+    if(err) {return cb(err);}
+
+    if (user){
+      user.comparePassword(password,function(err,isMatch){
+        if(isMatch){
+          console.log(user);
+          return cb(nil,user);
+        }else{
+          return cb(new Error("Invalid user"));
+        }
+      });
+    }else{
+      return cb(new Error("Invalid user"));
+    }
+  });
+};
+
 mongoose.model('User', UserSchema);

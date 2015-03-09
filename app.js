@@ -19,6 +19,9 @@ var app = express();
 
 require('./config/express')(app, config);
 
+// Loading seed data
+require('./lib/seed');
+
 app.listen(config.port);
 
 module.exports = app;

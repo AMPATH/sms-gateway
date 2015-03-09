@@ -23,6 +23,7 @@ describe('Admin Controller', function(){
       expect(err).to.be(null);
       request(app)
           .get('/admin/application')
+          .set("Authorization", "basic " + new Buffer("admin:@dm1n").toString("base64"))
           .expect(200)
           .end(function(err, res){
               if (err) return done(err);
@@ -68,7 +69,6 @@ describe('Admin Controller', function(){
           .expect(200)
           .end(function(err, res){
               if (err) return done(err);
-              console.log(res.body);
               expect(res.body.name).to.be("app1 withspace");
               done();
           });

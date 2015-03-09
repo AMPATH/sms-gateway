@@ -25,7 +25,6 @@ ApplicationSchema.methods.toJSON = function() {
   return _.omit(obj,"_id","__v","secret");
 };
 
-
 // Convert name to lowercase
 ApplicationSchema.pre('validate', function (next, data) {
   if (this.name) {

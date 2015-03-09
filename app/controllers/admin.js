@@ -2,14 +2,37 @@ var express = require('express'),
     router = express.Router(),
     mongoose = require('mongoose'),
     _ = require('underscore'),
-    Application = mongoose.model('Application');
+    basicAuth = require('basic-auth'),
+    Application = mongoose.model('Application'),
+    User = mongoose.model('User');
+
 
 module.exports = function (app) {
     app.use('/admin', router);
 };
 
 
-router.get('/application',function(req, res, next){
+var auth = function (req, res, next) {
+  var user = basicAuth(req);
+
+  if (user) {
+    User.authorize(user.name,user.password,function(err,usr){
+      if (err) {
+        res.set('WWW-Authenticate', 'Basic realm=Authorization Required');
+        return res.status(401);
+      }
+      req.user = usr;
+      next();
+    });
+  }else{
+    res.set('WWW-Authenticate', 'Basic realm=Authorization Required');
+    return res.send(401);
+  }
+
+};
+
+
+router.get('/application',auth,function(req, res, next){
   Application.find(function(err,applications){
     if (err) return errorHandler(500,err,res);
     res.status(200).json(applications);

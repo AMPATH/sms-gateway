@@ -21,8 +21,9 @@ describe('User Model', function(){
         done();
       });
     });
+
     it('should not save without password',function(done){
-      user = new User({name: 'admin'});
+      user = new User({name: 'admin1'});
       user.save(function(err,usr){
         expect(err).not.to.be(null);
         done();
@@ -30,7 +31,7 @@ describe('User Model', function(){
     });
 
     it('should save with valid name and password',function(done){
-      user = new User({name: 'admin',password: "not so secret"});
+      user = new User({name: 'admin1',password: "not so secret"});
       user.save(function(err,usr){
         expect(err).to.be(null);
         expect(usr).to.be(user);
@@ -38,7 +39,7 @@ describe('User Model', function(){
       });
     });
 
-    
+
   });
 
 });
