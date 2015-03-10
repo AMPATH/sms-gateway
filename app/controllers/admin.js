@@ -8,7 +8,7 @@ var express = require('express'),
 
 
 module.exports = function (app) {
-    app.use('/admin', router);
+    app.use('/admin',auth, router);
 };
 
 
@@ -32,7 +32,7 @@ var auth = function (req, res, next) {
 };
 
 
-router.get('/application',auth,function(req, res, next){
+router.get('/application',function(req, res, next){
   Application.find(function(err,applications){
     if (err) return errorHandler(500,err,res);
     res.status(200).json(applications);

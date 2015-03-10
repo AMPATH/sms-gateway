@@ -8,8 +8,46 @@ var mongoose = require('mongoose'),
     Application = mongoose.model('Application');
 
 
-
 describe('Admin Controller', function(){
+
+  describe('Without Basic Auth ',function(){
+
+    it('should fail get application',function(done){
+      request(app)
+          .get('/admin/application')
+          .expect(401,done);
+    });
+
+    it('should fail post application',function(done){
+      request(app)
+          .post('/admin/application')
+          .expect(401,done);
+    });
+
+    it('should fail get application details',function(done){
+      request(app)
+          .get('/admin/application/app1')
+          .expect(401,done);
+    });
+
+    it('should fail enable application',function(done){
+      request(app)
+          .post('/admin/application/app1/enable')
+          .expect(401,done);
+    });
+
+    it('should fail disable application',function(done){
+      request(app)
+          .post('/admin/application/app1/disable')
+          .expect(401,done);
+    });
+
+    it('should fail change limit application',function(done){
+      request(app)
+          .post('/admin/application/app1/limit')
+          .expect(401,done);
+    });
+  });
 
   before(function(){
     Application.collection.remove(function(err){
@@ -22,9 +60,9 @@ describe('Admin Controller', function(){
     application.save(function(err){
       expect(err).to.be(null);
       request(app)
-          .get('/admin/application')
-          .set("Authorization", "basic " + new Buffer("admin:@dm1n").toString("base64"))
-          .expect(200)
+              .get('/admin/application')
+              .set("Authorization", "basic " + new Buffer("admin:@dm1n").toString("base64"))
+              .expect(200)
           .end(function(err, res){
               if (err) return done(err);
               expect(res.body).to.have.length(1);
@@ -41,6 +79,7 @@ describe('Admin Controller', function(){
     it('should return 404 for the application is invalid',function(done){
       request(app)
         .get('/admin/application/not_there')
+        .set("Authorization", "basic " + new Buffer("admin:@dm1n").toString("base64"))
         .expect(404)
         .expect("Unable to find application with name 'not_there'",done);
     });
@@ -51,6 +90,7 @@ describe('Admin Controller', function(){
         expect(err).to.be(null);
         request(app)
           .get('/admin/application/app1')
+          .set("Authorization", "basic " + new Buffer("admin:@dm1n").toString("base64"))
           .expect(200)
           .end(function(err, res){
               if (err) return done(err);
@@ -66,6 +106,7 @@ describe('Admin Controller', function(){
         expect(err).to.be(null);
         request(app)
           .get('/admin/application/app1 withspace')
+          .set("Authorization", "basic " + new Buffer("admin:@dm1n").toString("base64"))
           .expect(200)
           .end(function(err, res){
               if (err) return done(err);
@@ -86,6 +127,7 @@ describe('Admin Controller', function(){
     it('fail without name',function(done){
       request(app)
         .post('/admin/application')
+        .set("Authorization", "basic " + new Buffer("admin:@dm1n").toString("base64"))
         .send({"secret": "123"})
         .expect(400)
         .expect("name is required",done);
@@ -94,6 +136,7 @@ describe('Admin Controller', function(){
     it('fail without secret',function(done){
       request(app)
         .post('/admin/application')
+        .set("Authorization", "basic " + new Buffer("admin:@dm1n").toString("base64"))
         .send({"name": "new name"})
         .expect(400)
         .expect("secret is required",done);
@@ -110,6 +153,7 @@ describe('Admin Controller', function(){
       };
       request(app)
         .post('/admin/application')
+        .set("Authorization", "basic " + new Buffer("admin:@dm1n").toString("base64"))
         .send({"name": "new name","secret": "123"})
         .expect(201)
         .expect(JSON.stringify(expectedJson),done);
@@ -121,6 +165,7 @@ describe('Admin Controller', function(){
         expect(err).to.be(null);
         request(app)
           .post('/admin/application')
+          .set("Authorization", "basic " + new Buffer("admin:@dm1n").toString("base64"))
           .send({"name": "Unique name","secret": "Secret"})
           .expect(400)
           .expect("Application with name 'unique name' already exists.",done);
@@ -141,6 +186,7 @@ describe('Admin Controller', function(){
             expect(err).to.be(null);
             request(app)
               .post('/admin/application/enabled_application/disable')
+              .set("Authorization", "basic " + new Buffer("admin:@dm1n").toString("base64"))
               .send({"name": "enabled_application","secret": "Secret"})
               .expect(200)
               .expect(JSON.stringify(expectedJson),done);
@@ -154,6 +200,7 @@ describe('Admin Controller', function(){
                  expect(err).to.be(null);
                  request(app)
                    .post('/admin/application/disabled_application/disable')
+                   .set("Authorization", "basic " + new Buffer("admin:@dm1n").toString("base64"))
                    .send({"name": "disabled_application","secret": "Secret"})
                    .expect(404)
                    .expect("Unable to find and disable application 'disabled_application'",done);
@@ -175,6 +222,8 @@ describe('Admin Controller', function(){
                  expect(err).to.be(null);
                  request(app)
                    .post('/admin/application/new_disabled_application/enable')
+                   .set("Authorization", "basic " + new Buffer("admin:@dm1n").toString("base64"))
+
                    .send({"name": "new_disabled_application","secret": "Secret"})
                    .expect(200)
                    .expect(JSON.stringify(expectedJson),done);
@@ -188,6 +237,7 @@ describe('Admin Controller', function(){
                       expect(err).to.be(null);
                       request(app)
                         .post('/admin/application/new_enabled_application/enable')
+                        .set("Authorization", "basic " + new Buffer("admin:@dm1n").toString("base64"))
                         .send({"name": "new_enabled_application","secret": "Secret"})
                         .expect(404)
                         .expect("Unable to find and enable application 'new_enabled_application'",done);
@@ -208,6 +258,7 @@ describe('Admin Controller', function(){
                       expect(err).to.be(null);
                       request(app)
                         .post('/admin/application/new_application_for_limit_test/limit')
+                        .set("Authorization", "basic " + new Buffer("admin:@dm1n").toString("base64"))
                         .send({"name": "new_application_for_limit_test","secret": "Secret","limit": 5000 })
                         .expect(200)
                         .expect(JSON.stringify(expectedJson),done);
@@ -221,6 +272,7 @@ describe('Admin Controller', function(){
                            expect(err).to.be(null);
                            request(app)
                              .post('/admin/application/new_application_for_NaN_limit_test/limit')
+                             .set("Authorization", "basic " + new Buffer("admin:@dm1n").toString("base64"))
                              .send({"name": "new_application_for_NaN_limit_test","secret": "Secret","limit": 5000.89 })
                              .expect(404)
                              .expect("Limit should be a number",done);
@@ -234,6 +286,7 @@ describe('Admin Controller', function(){
                                 expect(err).to.be(null);
                                 request(app)
                                   .post('/admin/application/new_application_for_NaN_limit_test/limit')
+                                  .set("Authorization", "basic " + new Buffer("admin:@dm1n").toString("base64"))
                                   .send({"name": "new_application_for_NaN_limit_test","secret": "Secret","limit": "sdjcaiuhfewh" })
                                   .expect(404)
                                   .expect("Limit should be a number",done);
