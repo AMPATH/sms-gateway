@@ -6,6 +6,7 @@ var app = require('../../app.js');
 
 var mongoose = require('mongoose'),
     Application = mongoose.model('Application');
+    User = mongoose.model('User');
 
 
 describe('Admin Controller', function(){
@@ -294,5 +295,32 @@ describe('Admin Controller', function(){
 
                });
 
+    describe('change password for admin user',function(){
 
+        after(function(){
+              User.collection.remove(function(err){
+                var user = new User({name: 'admin', password: '@dm1n'});
+                user.save(function(err){
+                 });
+               });
+        });
+
+        it('should change password',function(done){
+          request(app)
+            .post('/admin/password')
+            .set("Authorization", "basic " + new Buffer("admin:@dm1n").toString("base64"))
+            .send({"new_password": "changed_password" })
+            .expect(200)
+            .expect("Password changed successfully for user 'admin'", done);
+        });
+
+        it('should reject requests with empty password',function(done){
+                  request(app)
+                    .post('/admin/password')
+                    .set("Authorization", "basic " + new Buffer("admin:changed_password").toString("base64"))
+                    .send({"new_password": "" })
+                    .expect(400)
+                    .expect("Password can\'t be blank", done);
+        });
+    });
 });

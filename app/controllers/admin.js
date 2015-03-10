@@ -4,7 +4,8 @@ var express = require('express'),
     _ = require('underscore'),
     basicAuth = require('basic-auth'),
     Application = mongoose.model('Application'),
-    User = mongoose.model('User');
+    User = mongoose.model('User'),
+    validate = require("validate.js");
 
 
 module.exports = function (app) {
@@ -19,14 +20,14 @@ var auth = function (req, res, next) {
     User.authorize(user.name,user.pass,function(err,usr){
       if (err) {
         res.set('WWW-Authenticate', 'Basic realm=Authorization Required');
-        return res.status(401);
+        return res.sendStatus(401);
       }
       req.user = usr;
       next();
     });
   }else{
     res.set('WWW-Authenticate', 'Basic realm=Authorization Required');
-    return res.send(401);
+    return res.sendStatus(401);
   }
 
 };
@@ -117,6 +118,22 @@ router.post('/application/:name/limit', function(req,res,next){
     });
 });
 
+//POST /admin/password
+
+router.post('/password', function(req,res,next){
+    var user = req.user;
+    var err = validate({password : req.body.new_password}, {password: {presence: true}});
+
+        if (err){
+            return errorHandler(400,err.password.join(),res);
+        }
+
+        user.password = req.body.new_password;
+              user.save(function(err,app){
+                if (err) return errorHandler(400,"Unable to update password for user '" + user.name + "'",res);
+                res.status(200).send("Password changed successfully for user '" + user.name +"'");
+        });
+});
 
 function errorHandler(code,err,res){
   var messages=err;
