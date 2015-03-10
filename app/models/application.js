@@ -60,4 +60,23 @@ ApplicationSchema.methods.compareSecret = function(candidateSecret, cb) {
     });
 };
 
+
+ApplicationSchema.statics.authenticate = function (appName,secret, cb) {
+  this.findOne({name: appName},function(err,app){
+    if(err) return cb(err);
+
+    if(app){
+      app.compareSecret(secret,function(err,isMatch){
+        if(isMatch){
+          return cb(null,app);
+        }else{
+          cb(new Error("Invalid application"));
+        }
+      });
+    }else{
+      cb(new Error("Invalid application"));
+    }
+  });
+};
+
 mongoose.model('Application', ApplicationSchema);

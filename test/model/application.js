@@ -49,5 +49,35 @@ describe('Application Model', function(){
     });
   });
 
+  describe('authenticate',function(){
+    afterEach(function(){
+      Application.collection.remove(function(err){
+      });
+    });
+
+    it('should fail if the application secret is different',function(done){
+      application = new Application({name: "newappp", secret: "Secret123", active: true, send: {limit: 2000, count: 0}});
+      application.save(function(err,app){
+        expect(err).to.be(null);
+
+        Application.authenticate("newapp","Secret",function(err,app){
+          expect(err).not.to.be(null);
+          done();
+        });
+      });
+    });
+
+    it('should pass if the application secret is same',function(done){
+      application = new Application({name: "newappp", secret: "Secret123", active: true, send: {limit: 2000, count: 0}});
+      application.save(function(err,app){
+        expect(err).to.be(null);
+
+        Application.authenticate("newapp","Secret123",function(err,app){
+          expect(err).not.to.be(null);
+          done();
+        });
+      });
+    });
+  });
 
 });
