@@ -49,9 +49,7 @@ router.post('/message',function(req,res,next){
   msg = createMessage(req);
 
   msg.save(function(err,message){
-
     if(err) return errorHandler(400,err,res);
-
     res.status(200).json(message);
   });
 

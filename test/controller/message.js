@@ -48,11 +48,39 @@ describe('Message Controller', function(){
       };
 
 
+      var output = {
+          "appName": 'appfortest',
+          "token": 'one time token to identify individual requests (preventing replaying of messages)',
+          "message": 'This is from new sms-gateway',
+          "sender": {
+              "name": 'Bob Smith',
+              "id": '121313'
+          },
+          "messageStatus": [{
+              "phonenumber": '055 0840 7317',
+              "status": 'sending'
+          }, {
+              "phonenumber": '0934 861 9007',
+              "status": 'sending'
+          }, {
+              "phonenumber": '(0151) 545 1812',
+              "status": 'sending'
+          }]
+      };
+
+
       request(app)
           .post('/message')
           .set("Authorization", "basic " + new Buffer("appForTest:Secret123").toString("base64"))
           .send(data)
-          .expect(200,done);
+          .expect(200)
+          .end(function(err, res){
+              if (err) return done(err);
+              expect(res.body).to.have.property("id");
+              delete res.body.id;
+              expect(res.body).to.eql(output);
+              done();
+          });
     });
   });
 
