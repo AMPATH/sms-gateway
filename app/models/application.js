@@ -62,7 +62,11 @@ ApplicationSchema.methods.compareSecret = function(candidateSecret, cb) {
 
 
 ApplicationSchema.statics.authenticate = function (appName,secret, cb) {
-  this.findOne({name: appName},function(err,app){
+
+  if(!appName) return cb(new Error("Invalid application"));
+
+
+  this.findOne({name: appName.toLowerCase()},function(err,app){
     if(err) return cb(err);
 
     if(app){
