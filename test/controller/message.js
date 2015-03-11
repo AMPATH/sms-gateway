@@ -49,8 +49,6 @@ describe('Message Controller', function(){
 
 
       var output = {
-          "appName": 'appfortest',
-          "token": 'one time token to identify individual requests (preventing replaying of messages)',
           "message": 'This is from new sms-gateway',
           "sender": {
               "name": 'Bob Smith',

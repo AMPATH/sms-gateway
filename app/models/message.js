@@ -19,7 +19,7 @@ var MessageSchema = new Schema({
 
 
 MessageSchema.methods.toJSON = function() {
- var obj = _.omit(this.toObject(),"__v","date");
+ var obj = _.omit(this.toObject(),"__v","date","token","appName");
  obj.id = obj._id;
  delete obj._id;
  obj.messageStatus= _.map(obj.messageStatus,function(m){
