@@ -55,6 +55,17 @@ router.post('/message',function(req,res,next){
 
 });
 
+router.get('/message/:id',function(req,res,next){
+  Message.findById(req.params.id,function(err,message){
+
+      if (err) return errorHandler(404,"Unable to find message with id '"+req.params.id+"'",res);
+
+      if(message){
+          return res.status(200).json(message);
+      }
+      return res.status(404).send("Unable to find message with id '"+req.params.id+"'");
+    });
+  });
 
 function createMessage(req){
   var msgData = _.pick(req.body,"token","sender","message");
