@@ -8,6 +8,50 @@ var mongoose = require('mongoose'),
 
 describe('Message Model', function(){
 
+  beforeEach(function(){
+    Message.collection.remove(function(err){
+    });
+  });
+
+
+  describe('phonenumber',function(){
+    var data = {
+      "appName": "app2",
+      "token": "random token123",
+      "sender":{
+        "name": "sender1",
+        "id": "1"
+      },
+      "message": "this is sample message",
+      "messageStatus":[
+        {"phonenumber": "+9188556678"},
+        {"phonenumber": "+9100056678"}
+      ]
+    };
+
+    it('should be able to query and update with phonenumber',function(done){
+      var msg = new Message(data);
+      msg.save(function(err,m){
+        expect(err).to.be(null);
+
+        var phoneId = m.messageStatus[0]._id;
+
+        Message.findOneAndUpdate({'messageStatus':{$elemMatch: {phonenumber: '+9188556678'}}},{
+          "$set": {
+            "messageStatus.$.status": 'sent'
+          }
+        },function(err,data){
+          if (err) return done(err);
+
+          expect( data.messageStatus[0].status).to.be("sent");
+          expect( data.messageStatus[1].status).to.be("sending");
+          done();
+        });
+      });
+
+    });
+  });
+
   describe('save',function(){
     var data = {
       "appName": "app1",
@@ -22,10 +66,7 @@ describe('Message Model', function(){
       ]
     };
 
-    beforeEach(function(){
-      Message.collection.remove(function(err){
-      });
-    });
+
 
     it('should fail without appname',function(done){
       var msgWithoutName = _.omit(data,'appName');
