@@ -50,6 +50,10 @@ router.post('/message',function(req,res,next){
 
   msg.save(function(err,message){
     if(err) return errorHandler(400,err,res);
+
+    var provider = req.locals.provider;
+    provider.sendSMS(message);
+
     res.status(200).json(message);
   });
 

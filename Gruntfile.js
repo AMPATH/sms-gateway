@@ -14,7 +14,7 @@ module.exports = function (grunt) {
 
   grunt.initConfig({
     jshint: {
-      all: ['app/**/*.js','config/express.js','test/**/*.js']
+      all: ['app/**/*.js','config/express.js','test/**/*.js','provider/**/*.js']
     },
     env: {
       dev: {
@@ -49,7 +49,8 @@ module.exports = function (grunt) {
         files: [
           'app.js',
           'app/**/*.js',
-          'config/*.js'
+          'config/*.js',
+          'provider/*.js'
         ],
         tasks: ['develop', 'delayed-livereload']
       },
