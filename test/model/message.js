@@ -15,6 +15,7 @@ describe('Message Model', function(){
 
 
   describe('phonenumber',function(){
+
     var data = {
       "appName": "app2",
       "token": "random token123",
@@ -49,6 +50,21 @@ describe('Message Model', function(){
         });
       });
 
+    });
+
+    it('should change sms status',function(done){
+      var msg = new Message(data);
+      msg.save(function(err,m){
+        expect(err).to.be(null);
+
+        var phoneId = m.messageStatus[0].id;
+        Message.changeSMSStatus(phoneId,'failed',function(e,m){
+          expect(e).to.be(null);
+
+          expect(m.messageStatus[0].status).to.be("failed");
+          done();
+        });
+      });
     });
   });
 

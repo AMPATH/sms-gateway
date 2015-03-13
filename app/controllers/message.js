@@ -52,7 +52,7 @@ router.post('/message',function(req,res,next){
     if(err) return errorHandler(400,err,res);
 
     var provider = req.locals.provider;
-    provider.sendSMS(message);
+    provider.handleSMS(message);
 
     res.status(200).json(message);
   });

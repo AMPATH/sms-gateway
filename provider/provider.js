@@ -3,12 +3,11 @@ var provider ={
 
   register: function(obj){
     var self=this;
-    // if (this.hasMethods(obj,'sendSMS','isSupportResponse','processResponse')){
-    if (this.hasMethods(obj,'sendSMS')){
+
+    if (this.hasMethods(obj,'handleSMS')){
       self.gateway=obj;
       return true;
     }
-
     return false;
   },
 

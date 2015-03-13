@@ -31,6 +31,17 @@ MessageSchema.methods.toJSON = function() {
 };
 
 
+MessageSchema.statics.changeSMSStatus = function (id,newStatus,cb) {
+
+  this.findOneAndUpdate({'messageStatus':{$elemMatch: {_id: id}}},{
+    "$set": {
+      "messageStatus.$.status": newStatus
+    }
+  },cb);
+
+};
+
+
 MessageSchema.index({ appName: 1, token: -1 },{unique: true});
 
 mongoose.model('Message', MessageSchema);
