@@ -16,3 +16,5 @@ SMS facade that sit between different applications requiring to send SMS and the
 * Run ```npm install``` for installing dependencies 
 * To run tests ```grunt test``` : This create a test databse in mongodb. So mongodb should be running
 * To run the server in development mode ```grunt```
+* you can access the api as ```http://localhost:3000``` (e.g : ```curl -u 'admin:@dm1n' http://localhost:3000/admin/application``` )
+* For admin apis default username:password is ```admin:@dm1n```  ( using basic auth )
