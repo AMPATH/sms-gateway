@@ -8,15 +8,7 @@ var bodyParser = require('body-parser');
 var compress = require('compression');
 var methodOverride = require('method-override');
 
-var provider = require('../provider/provider');
-var oxygen = require('../provider/oxygen8');
-
-if(!provider.register(oxygen)){
-  console.log("Unable to register provider. Please check the provider is valid or not!");
-  process.exit(1);
-}
-
-module.exports = function(app, config) {
+module.exports = function(app, config, provider) {
   app.set('views', config.root + '/app/views');
   app.set('view engine', 'ejs');
 

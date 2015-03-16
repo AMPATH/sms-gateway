@@ -15,9 +15,18 @@ var models = glob.sync(config.root + '/app/models/*.js');
 models.forEach(function (model) {
   require(model);
 });
+
 var app = express();
 
-require('./config/express')(app, config);
+var provider = require('./provider/provider');
+var oxygen = require('./provider/oxygen8');
+
+if(!provider.register(oxygen)){
+  console.log("Unable to register provider. Please check the provider is valid or not!");
+  process.exit(1);
+}
+
+require('./config/express')(app, config,provider);
 
 // Loading seed data
 require('./lib/seed');
