@@ -6,14 +6,13 @@ var _ = require('underscore'),
 
 
 
-function postSMS(phonenumbers,refId,msg,cb){
-
-  // TODO: convert phonenumber to MSISDN
+function postSMS(phonenumbers,msg,cb){
 
   var postData = querystring.stringify({
     'Channel' : 'UK.VODAFONE',
-    'MSISDN'  : phonenumber, // to which phone
-    'Content' : msg
+    'MSISDN'  : phonenumbers.join(","),
+    'Content' : msg,
+    'Multitarget': 1
   });
 
   var options = {
@@ -43,18 +42,47 @@ function postSMS(phonenumbers,refId,msg,cb){
   req.end();
 }
 
-function parseResult(result){
-  console.log(result);
+function parseResult(messageObj,result){
+
+  var resultData = result.split('\n');
+
+  if (resultData.length < 3 || resultData[0] !== '101'){
+    updateMessageStatus(messageObj,'failed');
+    return;
+  }
+
+  updateMessageStatus(messageObj,"sent",resultData[2].split(","));
 }
 
+
+function updateMessageStatus(messageObj,status,ref){
+
+  _.each(messageObj.messageStatus,function(ph,index){
+     ph.status=status;
+     if(ref && ref.length !== 0 && ref.length > index){
+       ph.reference=ref[index];
+     }
+  });
+
+  messageObj.save(function(err,msg){
+    if(err) console.log("Unable to save the message object!");
+  });
+
+}
 var obj={
 
   handleSMS: function(messageObj,cb){
     var phonenumbers =  _.map(messageObj.messageStatus,function(ph){
-      return ph.phonenumber; //convert to 
+      return ph.phonenumber; //convert to
     });
 
-
+    postSMS(phonenumbers,messageObj.message,function(err,data){
+      if(err){
+        updateMessageStatus(messageObj,'failed');
+        return;
+      }
+      parseResult(messageObj,data);
+    });
   }
 };
 

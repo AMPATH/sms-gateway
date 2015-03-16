@@ -12,7 +12,7 @@ var MessageSchema = new Schema({
   },
   message: String,
   messageStatus: [
-    {phonenumber: String, status: { type: String, default: "sending" }}
+    {phonenumber: String, status: { type: String, default: "sending" },reference: String}
   ],
   date: { type: Date, default: Date.now }
 });
@@ -24,6 +24,7 @@ MessageSchema.methods.toJSON = function() {
  delete obj._id;
  obj.messageStatus= _.map(obj.messageStatus,function(m){
    delete m._id;
+   delete m.reference;
    return m;
  });
 
