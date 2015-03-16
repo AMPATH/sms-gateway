@@ -6,20 +6,19 @@ var _ = require('underscore'),
 
 
 
-function postSMS(phonenumber,refId,msg,cb){
+function postSMS(phonenumbers,refId,msg,cb){
 
   // TODO: convert phonenumber to MSISDN
 
   var postData = querystring.stringify({
     'Channel' : 'UK.VODAFONE',
-    'SourceReference': refId,
-    'MSISDN'  : phonenumber,
+    'MSISDN'  : phonenumber, // to which phone
     'Content' : msg
   });
 
   var options = {
     hostname: 'localhost',
-    port: 8080,
+    port: 8000,
     path: '/users/sms',
     method: 'POST',
     auth: 'username:password',
@@ -30,8 +29,6 @@ function postSMS(phonenumber,refId,msg,cb){
   };
 
   var req = http.request(options, function(res) {
-    // console.log('STATUS: ' + res.statusCode);
-    // console.log('HEADERS: ' + JSON.stringify(res.headers));
     res.setEncoding('utf8');
     res.on('data', function (chunk) {
       cb(null,chunk);
@@ -46,20 +43,18 @@ function postSMS(phonenumber,refId,msg,cb){
   req.end();
 }
 
+function parseResult(result){
+  console.log(result);
+}
+
 var obj={
 
   handleSMS: function(messageObj,cb){
-    _.each(messageObj.messageStatus,function(ph){
-      var phone = ph;
-      postSMS(phone.phonenumber,phone.id,messageObj.message,function(err,data){
-        var status="sent";
-        if(err) status="fail";
-        Message.changeSMSStatus(phone._id,status,function(e,m){
-          if (e) console.log(e);
-          // updated message.
-        });
-      });
+    var phonenumbers =  _.map(messageObj.messageStatus,function(ph){
+      return ph.phonenumber; //convert to 
     });
+
+
   }
 };
 
