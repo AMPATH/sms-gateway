@@ -2,11 +2,63 @@ var _ = require('underscore'),
     mongoose = require('mongoose'),
     Message = mongoose.model('Message'),
     querystring = require('querystring'),
-    http = require('http'),
-    Msisdn = require('mobile-to-msisdn').Msisdn,
-    wait = require('wait.for');
+    http = require('http');
 
 
+/**
+ * numberingScheme for Kenya
+ */
+var numberingSchemeKenya={
+    internationalCode: "254",
+    nationalPrefix: "0",
+    canStartWithInternationalCode: false,
+    minLength: 10,
+    maxLength: 10,
+    formats: [
+      "^(254)[0-9]{10}$"
+    ]
+};
+
+
+function strip(unformattedInput) {
+  return unformattedInput.replace(/[^0-9]/g, '');
+}
+
+/**
+ * Returns a msisdn from the unformatted input string
+ *
+ * @param {String} unformatted
+ * @param {Object} numberingScheme Containing {"internationalCode": {String}, "nationalPrefix": {String}, "canStartWithInternationalCode": {Boolean} }
+ * @returns {String}
+ */
+function msisdnFromUnformatted(unformatted, numberingScheme) {
+
+  // strip out non-digits
+  var stripped,
+    withoutNationalDialingPrefix;
+
+  stripped = strip(unformatted);
+
+  // strip the national dialing prefix, if it exists, since it's not part of a msisdn
+  withoutNationalDialingPrefix = stripped;
+  if (numberingScheme.nationalPrefix) {
+    if (0 === stripped.indexOf(numberingScheme.nationalPrefix)) {
+      withoutNationalDialingPrefix = stripped.substring(numberingScheme.nationalPrefix.length);
+    }
+  }
+
+  // prepend the international prefix, if not already there
+  if (0 === withoutNationalDialingPrefix.indexOf(numberingScheme.internationalCode)) {
+    // international code must already be there, since local format does not permit number to begin with it
+    if (!numberingScheme.canStartWithInternationalCode) {
+      return withoutNationalDialingPrefix;
+    }
+
+    // fall-through: indicates international code probably not present since local format permits numbers to begin with it
+  }
+
+  return numberingScheme.internationalCode + withoutNationalDialingPrefix;
+}
 
 function postSMS(phonenumbers,msg,cb){
 
@@ -72,35 +124,14 @@ function updateMessageStatus(messageObj,status,ref,cb){
 
   cb(status);
 }
+
 var obj={
-
   handleSMS: function(messageObj,cb){
-    // var phonenumbers =  _.map(messageObj.messageStatus,function(ph){
-    //   return ph.phonenumber;
-    // });
-    var phoneNumbers =  messageObj.messageStatus;
-    var formatted;
-    var formattedNumbers = [];
+    var formattedPhonenumbers =  _.map(messageObj.messageStatus,function(ph){
+      return msisdnFromUnformatted(ph.phonenumber,numberingSchemeKenya);
+    });
 
-    var setter = function(error, formattedVal) { formatted = formattedVal; };
-
-    function convertPhoneNumberToMSISDN(phoneNumber, setter) {
-
-            try {
-                  var m = new Msisdn(phoneNumber, 'Kenya');
-                  var result = wait.forMethod(m, "msisdn");
-                }
-                catch(err) {
-                   console.log(err);
-                }
-    }
-
-    for (i = 0; i < phoneNumbers.length; i++) {
-        convertPhoneNumberToMSISDN(phoneNumbers[i].phonenumber, setter);
-        formattedNumbers[i] = formatted;
-    }
-
-    postSMS(formattedNumbers,messageObj.message,function(err,data){
+    postSMS(formattedPhonenumbers,messageObj.message,function(err,data){
       if(err){
         updateMessageStatus(messageObj,'failed',null,cb);
         return;
