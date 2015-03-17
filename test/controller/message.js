@@ -22,19 +22,22 @@ var mongoose = require('mongoose'),
        ]
      };
 
-
 describe('Message Controller', function(){
 
-  before(function(done){
+  beforeEach(function(done){
     application = new Application({name: "appForTest", secret: "Secret123", active: true, send: {limit: 2000, count: 0}});
     application.save(function(err){
       done();
     });
   });
 
-  after(function(){
-        Message.collection.remove(function(err){
-        });
+  afterEach(function(done){
+    Application.collection.remove(function(err){
+      done();
+    });
+
+    Message.collection.remove(function(err){
+    });
   });
 
   describe('POST message',function(){
@@ -99,6 +102,33 @@ describe('Message Controller', function(){
                     done();
                 });
       });
+
+      it('should increment application message count',function(done){
+        var data = {"token" : "app req token",
+            "sender": {
+                "name": "Bob Smith",
+                "id": "121313"
+            },
+            "recipients": ["055 0840 7317","0934 861 9007"],
+            "message": "This is from new sms-gateway"
+        };
+
+        request(app)
+                  .post('/message')
+                  .set("Authorization", "basic " + new Buffer("appForTest:Secret123").toString("base64"))
+                  .send(data)
+                  .expect(200)
+                  .end(function(err, res){
+                      if (err) return done(err);
+                      setTimeout(function(){
+                        getSMSCount('appForTest',function(err,count){
+                          if(err) done(err);
+                          expect(count).to.be(2);
+                          done();
+                        });
+                      }, 1000);
+                  });
+      });
   });
 
   describe('GET message details',function(){
@@ -134,5 +164,15 @@ describe('Message Controller', function(){
                          });
             });
        });
+
+
     });
 });
+
+
+function getSMSCount(appName,cb){
+  Application.findOne({name: appName.toLowerCase()},function(err,app){
+    if (err || !app) { return cb(err);}
+    cb(null,app.send.count);
+  });
+}

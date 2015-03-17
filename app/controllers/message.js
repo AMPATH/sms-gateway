@@ -52,7 +52,15 @@ router.post('/message',function(req,res,next){
     if(err) return errorHandler(400,err,res);
 
     var provider = req.locals.provider;
-    provider.handleSMS(message);
+    provider.handleSMS(message,function(status){
+      if (status !== 'failed'){
+        var app = req.app;
+        var update = { $inc: { 'send.count': message.messageStatus.length }};
+        app.update(update,function(err,updated_app){
+          if(err) console.log(err);
+        });
+      }
+    });
 
     res.status(200).json(message);
   });

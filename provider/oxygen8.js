@@ -42,20 +42,20 @@ function postSMS(phonenumbers,msg,cb){
   req.end();
 }
 
-function parseResult(messageObj,result){
+function parseResult(messageObj,result,cb){
 
   var resultData = result.split('\n');
 
   if (resultData.length < 3 || resultData[0] !== '101'){
-    updateMessageStatus(messageObj,'failed');
+    updateMessageStatus(messageObj,'failed',null,cb);
     return;
   }
 
-  updateMessageStatus(messageObj,"sent",resultData[2].split(","));
+  updateMessageStatus(messageObj,"sent",resultData[2].split(","),cb);
 }
 
 
-function updateMessageStatus(messageObj,status,ref){
+function updateMessageStatus(messageObj,status,ref,cb){
 
   _.each(messageObj.messageStatus,function(ph,index){
      ph.status=status;
@@ -68,20 +68,21 @@ function updateMessageStatus(messageObj,status,ref){
     if(err) console.log("Unable to save the message object!");
   });
 
+  cb(status);
 }
 var obj={
 
   handleSMS: function(messageObj,cb){
     var phonenumbers =  _.map(messageObj.messageStatus,function(ph){
-      return ph.phonenumber; //convert to
+      return ph.phonenumber;
     });
 
     postSMS(phonenumbers,messageObj.message,function(err,data){
       if(err){
-        updateMessageStatus(messageObj,'failed');
+        updateMessageStatus(messageObj,'failed',null,cb);
         return;
       }
-      parseResult(messageObj,data);
+      parseResult(messageObj,data,cb);
     });
   }
 };
