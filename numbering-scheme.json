@@ -1,0 +1,12 @@
+{
+  "Kenya": {
+    "internationalCode": "254",
+    "nationalPrefix": "0",
+    "canStartWithInternationalCode": false,
+    "minLength": 10,
+    "maxLength": 10,
+    "formats": [
+      "^(254)[0-9]{10}$"
+    ]
+  }
+}

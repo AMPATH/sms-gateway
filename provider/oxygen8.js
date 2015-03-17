@@ -2,7 +2,9 @@ var _ = require('underscore'),
     mongoose = require('mongoose'),
     Message = mongoose.model('Message'),
     querystring = require('querystring'),
-    http = require('http');
+    http = require('http'),
+    Msisdn = require('mobile-to-msisdn').Msisdn,
+    wait = require('wait.for');
 
 
 
@@ -73,11 +75,32 @@ function updateMessageStatus(messageObj,status,ref,cb){
 var obj={
 
   handleSMS: function(messageObj,cb){
-    var phonenumbers =  _.map(messageObj.messageStatus,function(ph){
-      return ph.phonenumber;
-    });
+    // var phonenumbers =  _.map(messageObj.messageStatus,function(ph){
+    //   return ph.phonenumber;
+    // });
+    var phoneNumbers =  messageObj.messageStatus;
+    var formatted;
+    var formattedNumbers = [];
 
-    postSMS(phonenumbers,messageObj.message,function(err,data){
+    var setter = function(error, formattedVal) { formatted = formattedVal; };
+
+    function convertPhoneNumberToMSISDN(phoneNumber, setter) {
+
+            try {
+                  var m = new Msisdn(phoneNumber, 'Kenya');
+                  var result = wait.forMethod(m, "msisdn");
+                }
+                catch(err) {
+                   console.log(err);
+                }
+    }
+
+    for (i = 0; i < phoneNumbers.length; i++) {
+        convertPhoneNumberToMSISDN(phoneNumbers[i].phonenumber, setter);
+        formattedNumbers[i] = formatted;
+    }
+
+    postSMS(formattedNumbers,messageObj.message,function(err,data){
       if(err){
         updateMessageStatus(messageObj,'failed',null,cb);
         return;
