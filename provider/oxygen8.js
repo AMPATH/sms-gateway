@@ -138,7 +138,17 @@ var obj={
       }
       parseResult(messageObj,data,cb);
     });
+  },
+
+  isSupportCallback: function(){
+    return true;
+  },
+
+  processCallback: function(data){
+
+
   }
+
 };
 
 

@@ -4,7 +4,7 @@ var provider ={
   register: function(obj){
     var self=this;
 
-    if (this.hasMethods(obj,'handleSMS')){
+    if (this.hasMethods(obj,'handleSMS','isSupportCallback','processCallback')){
       self.gateway=obj;
       return true;
     }
