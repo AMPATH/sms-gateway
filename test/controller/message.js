@@ -129,7 +129,29 @@ describe('Message Controller', function(){
                       }, 1000);
                   });
       });
-  });
+
+      it('should not send sms if limit has been reached for app',function(done){
+      applicationLimitReached = new Application({name: "appLimitReached", secret: "Secret123", active: true, send: {limit: 2, count: 0}});
+          applicationLimitReached.save(function(err){
+
+              var data = {"token" : "app token",
+                  "sender": {
+                      "name": "Bob Smith",
+                      "id": "121313"
+                  },
+                  "recipients": ["055 0840 7317","0934 861 9007","055 0840 7318","055 0840 7317"],
+                  "message": "This is from new sms-gateway"
+              };
+
+              request(app)
+                        .post('/message')
+                        .set("Authorization", "basic " + new Buffer("appLimitReached:Secret123").toString("base64"))
+                        .send(data)
+                        .expect(400)
+                        .expect("Unable to send sms as application 'applimitreached' has reached the allocated sms limit",done);
+          });
+      });
+});
 
   describe('GET message details',function(){
 
