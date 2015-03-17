@@ -144,7 +144,7 @@ var obj={
     return true;
   },
 
-  processCallback: function(data){
+  processCallback: function(req, res, next){
 
 
   }
