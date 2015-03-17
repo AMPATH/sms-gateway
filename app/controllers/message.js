@@ -33,6 +33,7 @@ var auth = function (req, res, next) {
 
 
 router.post('/message',function(req,res,next){
+
   var validation={
     "token": {presence: true},
     "sender": {presence: true},
@@ -46,25 +47,27 @@ router.post('/message',function(req,res,next){
     return res.status(400).send(err);
   }
 
-  msg = createMessage(req);
+  var appLimit = req.app.send.limit;
 
-  msg.save(function(err,message){
-    if(err) return errorHandler(400,err,res);
-
-    var provider = req.locals.provider;
-    provider.handleSMS(message,function(status){
-      if (status !== 'failed'){
-        var app = req.app;
-        var update = { $inc: { 'send.count': message.messageStatus.length }};
-        app.update(update,function(err,updated_app){
-          if(err) console.log(err);
+  if(req.body.recipients.length > appLimit){
+    return res.status(400).send("Unable to send sms as application '"+req.app.name+"' has reached the allocated sms limit");
+  }else{
+    msg = createMessage(req);
+    msg.save(function(err,message){
+        if(err) return errorHandler(400,err,res);
+        var provider = req.locals.provider;
+        provider.handleSMS(message,function(status){
+            if (status !== 'failed'){
+                var app = req.app;
+                var update = { $inc: { 'send.count': message.messageStatus.length }};
+                app.update(update,function(err,updated_app){
+                    if(err) console.log(err);
+                });
+            }
         });
-      }
+        res.status(200).json(message);
     });
-
-    res.status(200).json(message);
-  });
-
+  }
 });
 
 router.get('/message/:id',function(req,res,next){
