@@ -42,6 +42,23 @@ MessageSchema.statics.changeSMSStatus = function (id,newStatus,cb) {
 
 };
 
+MessageSchema.statics.changeSMSStatusWithReference = function (ref,newStatus,cb) {
+
+  this.findOneAndUpdate({'messageStatus':{$elemMatch: {reference: ref}}},{
+    "$set": {
+      "messageStatus.$.status": newStatus
+    }
+  },function(err, message) {
+        if (err) {
+          return cb(err);
+        }
+        if(message){
+                return cb(null,message);
+        }
+        return cb(new Error("Cannot find reference"));
+      });
+};
+
 
 MessageSchema.index({ appName: 1, token: -1 },{unique: true});
 

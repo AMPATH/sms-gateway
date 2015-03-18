@@ -9,7 +9,7 @@ var express = require('express'),
 
 
 module.exports = function (app) {
-    app.use('/', auth, router);
+    app.use('/', router);
 };
 
 
@@ -32,7 +32,7 @@ var auth = function (req, res, next) {
 };
 
 
-router.post('/message',function(req,res,next){
+router.post('/message',auth,function(req,res,next){
 
   var validation={
     "token": {presence: true},
@@ -70,7 +70,7 @@ router.post('/message',function(req,res,next){
   }
 });
 
-router.get('/message/:id',function(req,res,next){
+router.get('/message/:id',auth,function(req,res,next){
   Message.findById(req.params.id,function(err,message){
 
       if (err) return errorHandler(404,"Unable to find message with id '"+req.params.id+"'",res);

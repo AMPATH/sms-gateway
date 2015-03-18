@@ -2,6 +2,7 @@ var _ = require('underscore'),
     mongoose = require('mongoose'),
     Message = mongoose.model('Message'),
     querystring = require('querystring'),
+    validate = require("validate.js");
     http = require('http');
 
 
@@ -66,6 +67,7 @@ function postSMS(phonenumbers,msg,cb){
     'Channel' : 'UK.VODAFONE',
     'MSISDN'  : phonenumbers.join(","),
     'Content' : msg,
+    'Receipt' : 1,
     'Multitarget': 1
   });
 
@@ -146,10 +148,25 @@ var obj={
 
   processCallback: function(req, res, next){
 
+    var validation={
+        "Reference": {presence: true},
+        "Status": { presence: true}
+      };
 
+    var err = validate(req.body,validation);
+
+    if(err){
+        return res.status(400).send(err);
+    }
+
+    var reference = req.body.Reference;
+    var status = req.body.Status;
+
+    Message.changeSMSStatusWithReference(reference,status,function(err,message){
+        if(err) return res.status(400).send("Fail");
+        if(message) return res.status(200).send("Success");
+    });
   }
-
 };
-
 
 module.exports=obj;
