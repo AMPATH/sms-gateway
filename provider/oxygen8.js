@@ -61,6 +61,14 @@ function msisdnFromUnformatted(unformatted, numberingScheme) {
   return numberingScheme.internationalCode + withoutNationalDialingPrefix;
 }
 
+
+/**
+ * postSMS - description
+ *
+ * @param  {String[]} phonenumbers array of comma separated phone numbers
+ * @param  {String} msg message to be sent
+ * @param  {callback} cb callback with status
+ */
 function postSMS(phonenumbers,msg,cb){
 
   var postData = querystring.stringify({
@@ -98,6 +106,14 @@ function postSMS(phonenumbers,msg,cb){
   req.end();
 }
 
+
+/**
+ * parseResult - description
+ *
+ * @param  {object} messageObj the messageobject
+ * @param  {String} result data returned as result of the POST sms
+ * @param  {callback} cb
+ */
 function parseResult(messageObj,result,cb){
 
   var resultData = result.split('\n');
@@ -111,6 +127,14 @@ function parseResult(messageObj,result,cb){
 }
 
 
+/**
+ * updateMessageStatus - updates the status of the message with the new status
+ *
+ * @param  {object} messageObj the messageobject
+ * @param  {String} status the new status to update to
+ * @param  {String} ref unique reference assigned by the provider for the message
+ * @param  {callback} cb callback which has the status of the message
+ */
 function updateMessageStatus(messageObj,status,ref,cb){
 
   _.each(messageObj.messageStatus,function(ph,index){
@@ -128,6 +152,13 @@ function updateMessageStatus(messageObj,status,ref,cb){
 }
 
 var obj={
+
+  /**
+   * handleSMS - formats the messageobj and posts sms to the recipients
+   *
+   * @param  {object} messageObj message object
+   * @param  {callback} cb  callback with status of sms
+   */
   handleSMS: function(messageObj,cb){
     var formattedPhonenumbers =  _.map(messageObj.messageStatus,function(ph){
       return msisdnFromUnformatted(ph.phonenumber,numberingSchemeKenya);
@@ -142,10 +173,25 @@ var obj={
     });
   },
 
+
+  /**
+   * isSupportCallback - returns true if this provider supports
+   *                     status callbacks, false if it does not
+   *
+   * @return {boolean}  description
+   */
   isSupportCallback: function(){
     return true;
   },
 
+
+  /**
+   * processCallback - process the delivery status callback from the provider
+   *
+   * @param  {object} req  http request object
+   * @param  {object} res  http response object
+   * @param  {callback} next http callback for the next middleware or route
+   */
   processCallback: function(req, res, next){
 
     var validation={

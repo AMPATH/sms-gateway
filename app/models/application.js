@@ -31,7 +31,7 @@ ApplicationSchema.virtual('date')
 
 
 /**
- * Ignore sensitive or unwanted fields sending to client
+ * Ignore sensitive or unwanted fields while sending to client as json.
  */
 ApplicationSchema.methods.toJSON = function() {
   var obj = this.toObject();
@@ -100,7 +100,7 @@ ApplicationSchema.methods.compareSecret = function(candidateSecret, cb) {
  * @param  {string} appName application name
  * @param  {string} secret  application secret
  * @param  {callback} cb      callback which has two paramters erro & application
- * object. if the match is found , it will return application object otherwise error
+ * object. if the match is found , it will return application object otherwise an error is returned
  */
 ApplicationSchema.statics.authenticate = function (appName,secret, cb) {
 

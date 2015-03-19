@@ -12,7 +12,14 @@ module.exports = function (app) {
     app.use('/', router);
 };
 
-
+/**
+ * auth middleware responsible for doing basic authentication
+ * for all admin REST apis
+ *
+ * @param  {object} req  http request object
+ * @param  {object} res  http response object
+ * @param  {callback} next http callback for the next middleware or route
+ */
 var auth = function (req, res, next) {
   var auth = basicAuth(req);
 
@@ -31,7 +38,23 @@ var auth = function (req, res, next) {
   }
 };
 
-
+/**
+ * POST /message
+ *
+ * This api is used by an application for sending a new message
+ * It expects json data with message details as shown below
+ * e.g
+ * {
+ *    "token" : "one time token to identify individual requests (preventing replaying of messages)",
+ *    "sender": {
+ *    "name": "Bob Smith",
+ *    "id": "121313"
+ *  },
+ *    "recipients": ["055 0840 7317","0934 861 9007","(0151) 545 1812"],
+ *    "message": "This is from new sms-gateway"
+ *}
+ *
+ */
 router.post('/message',auth,function(req,res,next){
 
   var validation={
@@ -70,6 +93,12 @@ router.post('/message',auth,function(req,res,next){
   }
 });
 
+/**
+ * GET /message/<id>
+ *
+ * This api is for getting details of an individual message
+ * by specifying its id.
+ */
 router.get('/message/:id',auth,function(req,res,next){
   Message.findById(req.params.id,function(err,message){
 
@@ -82,6 +111,13 @@ router.get('/message/:id',auth,function(req,res,next){
     });
   });
 
+
+/**
+ * createMessage - description
+ *
+ * @param  {object} req the http request object
+ * @return {object} message the message object
+ */
 function createMessage(req){
   var msgData = _.pick(req.body,"token","sender","message");
 
@@ -94,6 +130,14 @@ function createMessage(req){
   return new Message(msgData);
 }
 
+
+/**
+ * errorHandler - for handling the error and sending it to the client.
+ *
+ * @param  {Number} code HTPP code that needs to be sent to the client
+ * @param  {error} err  error object
+ * @param  {object} res  http response object
+ */
 function errorHandler(code,err,res){
   var messages=err;
   if (typeof err.errors != 'undefined'){
