@@ -1,9 +1,18 @@
+
+/**
+ * Defines application model
+ */
 var mongoose = require('mongoose'),
     uniqueValidator = require('mongoose-unique-validator'),
     _ = require('underscore'),
     bcrypt = require('bcrypt'),
     Schema = mongoose.Schema;
 
+
+/**
+ * Application schema for application collection
+ * in mongodb
+ */
 var ApplicationSchema = new Schema({
   name: {type: String, required: "name is required",  unique: true},
   secret: {type: String, required: "secret is required"},
@@ -20,12 +29,20 @@ ApplicationSchema.virtual('date')
     return this._id.getTimestamp();
   });
 
+
+/**
+ * Ignore sensitive or unwanted fields sending to client
+ */
 ApplicationSchema.methods.toJSON = function() {
   var obj = this.toObject();
   return _.omit(obj,"_id","__v","secret");
 };
 
-// Convert name to lowercase
+
+/**
+ * validate hook using to convert application name to lowercase
+ *
+ */
 ApplicationSchema.pre('validate', function (next, data) {
   if (this.name) {
       this.name = this.name.toLowerCase();
@@ -33,7 +50,10 @@ ApplicationSchema.pre('validate', function (next, data) {
   next();
 });
 
-// Middleware for encrypting secret key
+
+/**
+ * Pre-save hook: using to convert application secret to encrypted one.
+ */
 ApplicationSchema.pre('save',function(next){
   var app = this;
 
@@ -51,8 +71,19 @@ ApplicationSchema.pre('save',function(next){
 });
 
 
+/**
+ * Plugin for checking application name is unique.
+ */
 ApplicationSchema.plugin(uniqueValidator,{message: "Application with name '{VALUE}' already exists."});
 
+
+/**
+ * compareSecret: To match a plain text secret with encrypted secret.
+ *
+ * @param  {string} candidateSecret the plain text secret which should match app secret.
+ * @param  {callback} cb  callback for getting if the secret is matching or not.
+ * this callback has two paramater error, and isMatch
+ */
 ApplicationSchema.methods.compareSecret = function(candidateSecret, cb) {
     bcrypt.compare(candidateSecret, this.secret, function(err, isMatch) {
         if (err) return cb(err);
@@ -61,6 +92,16 @@ ApplicationSchema.methods.compareSecret = function(candidateSecret, cb) {
 };
 
 
+
+/**
+ * authenticate : check the provided appname and secret is matching
+ * with existing records or not
+ *
+ * @param  {string} appName application name
+ * @param  {string} secret  application secret
+ * @param  {callback} cb      callback which has two paramters erro & application
+ * object. if the match is found , it will return application object otherwise error
+ */
 ApplicationSchema.statics.authenticate = function (appName,secret, cb) {
 
   if(!appName) return cb(new Error("Invalid application"));
