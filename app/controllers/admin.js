@@ -8,11 +8,26 @@ var express = require('express'),
     validate = require("validate.js");
 
 
+/**
+ * export admin routes to the application.
+ * All the admin related rest api urls are under
+ * /admin path.
+ *
+ * @param  {object} express application object
+ */
 module.exports = function (app) {
     app.use('/admin',auth, router);
 };
 
 
+/**
+ * auth middleware responsible for doing basic authentication
+ * for all admin REST apis
+ *
+ * @param  {object} req  http request object
+ * @param  {object} res  http response object
+ * @param  {callback} next http callback for the next middleware or route
+ */
 var auth = function (req, res, next) {
   var user = basicAuth(req);
 
@@ -22,6 +37,7 @@ var auth = function (req, res, next) {
         res.set('WWW-Authenticate', 'Basic realm=Authorization Required');
         return res.sendStatus(401);
       }
+      // If the authentication sucessful then assign the admin user object in request
       req.user = usr;
       next();
     });
@@ -29,10 +45,14 @@ var auth = function (req, res, next) {
     res.set('WWW-Authenticate', 'Basic realm=Authorization Required');
     return res.sendStatus(401);
   }
-
 };
 
 
+/**
+ * GET /admin/application.
+ *
+ * This api respond with all the registered applications.
+ */
 router.get('/application',function(req, res, next){
   Application.find(function(err,applications){
     if (err) return errorHandler(500,err,res);
@@ -41,6 +61,18 @@ router.get('/application',function(req, res, next){
 });
 
 
+/**
+ * POST /admin/application
+ *
+ * This api is for creating a new application
+ * It expect a json data with name & secret of application.
+ * e.g
+ * {
+ *  "name": "application_name",
+ *  "secret": "application secret"
+ * }
+ *
+ */
 router.post('/application',function(req,res,next){
   application = new Application({name: req.body.name, secret: req.body.secret, active: true, send: {limit: 200000, count: 0}});
   application.save(function(err,app){
@@ -49,6 +81,13 @@ router.post('/application',function(req,res,next){
   });
 });
 
+
+/**
+ * GET /admin/application/<application_name>
+ *
+ * This api is for getting details of an individual application
+ * by specify its name
+ */
 router.get('/application/:name',function(req, res, next){
   Application.findOne({name: req.params.name},function(err,application){
     if (err) return errorHandler(404,err,res);
@@ -60,8 +99,14 @@ router.get('/application/:name',function(req, res, next){
   });
 });
 
-//POST /admin/application/{appName}/disable
 
+
+/**
+ * POST /admin/application/<application_name>/disable
+ *
+ * API for disable specified application.
+ *
+ */
 router.post('/application/:name/disable', function(req,res,next){
     var query = {name: req.params.name, active: 'true'};
     var update = {active: 'false'};
@@ -78,8 +123,12 @@ router.post('/application/:name/disable', function(req,res,next){
     });
 });
 
-//POST /admin/application/{appName}/enable
-
+/**
+ * POST /admin/application/<application_name>/enable
+ *
+ * API for enable specified application.
+ *
+ */
 router.post('/application/:name/enable', function(req,res,next){
     var query = {name: req.params.name, active: 'false'};
     var update = {active: 'true'};
@@ -96,9 +145,18 @@ router.post('/application/:name/enable', function(req,res,next){
     });
 });
 
-//POST /admin/application/{appName}/limit
-
-router.post('/application/:name/limit', function(req,res,next){
+/**
+ * POST /admin/application/<application_name>/limit
+ *
+ * API for changing sms limit of a specified application.
+ * It expect a json data with new limit as shown below.
+ * e.g
+ * {
+ *  "limit": 20000
+ * }
+ *
+ */
+ router.post('/application/:name/limit', function(req,res,next){
     var query = {name: req.params.name};
     var newLimit = req.body.limit;
     if(!isInteger(newLimit)){
@@ -118,8 +176,17 @@ router.post('/application/:name/limit', function(req,res,next){
     });
 });
 
-//POST /admin/password
-
+/**
+ * POST /admin/password
+ *
+ * API for changing admin user's password
+ * It expect a json data with new limit as shown below.
+ * e.g
+ * {
+ *  "new_password": "this is my new password"
+ * }
+ *
+ */
 router.post('/password', function(req,res,next){
     var user = req.user;
     var err = validate({password : req.body.new_password}, {password: {presence: true}});
@@ -135,6 +202,13 @@ router.post('/password', function(req,res,next){
         });
 });
 
+/**
+ * errorHandler - for handling the error and send it to the client.
+ *
+ * @param  {Number} code HTPP code which needs to send to client
+ * @param  {error} err  error object
+ * @param  {object} res  http response object
+ */
 function errorHandler(code,err,res){
   var messages=err;
   if (typeof err.errors != 'undefined'){
@@ -145,6 +219,13 @@ function errorHandler(code,err,res){
   res.status(code).send(messages);
 }
 
+
+/**
+ * isInteger - check whether the input data is an integer type or not
+ *
+ * @param  {object} x input data for checking
+ * @return {boolean} true if it is integer otherwise false.
+ */
 function isInteger(x) {
-return (typeof x === 'number') && (Math.round(x) === x);
+  return (typeof x === 'number') && (Math.round(x) === x);
 }
