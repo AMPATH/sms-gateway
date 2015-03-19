@@ -74,6 +74,8 @@ router.post('/message',auth,function(req,res,next){
 
   if(req.body.recipients.length > appLimit){
     return res.status(400).send("Unable to send sms as application '"+req.app.name+"' has reached the allocated sms limit");
+  }else if(!req.app.active){
+    return res.status(400).send("Unable to send sms as application '"+req.app.name+"' has been disabled");
   }else{
     msg = createMessage(req);
     msg.save(function(err,message){

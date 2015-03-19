@@ -151,6 +151,28 @@ describe('Message Controller', function(){
                         .expect("Unable to send sms as application 'applimitreached' has reached the allocated sms limit",done);
           });
       });
+
+      it('should not send sms if application  has been disabled',function(done){
+            disabledApplication = new Application({name: "disabledApplication", secret: "Secret123", active: false, send: {limit: 2000, count: 0}});
+                disabledApplication.save(function(err){
+
+                    var data = {"token" : "app token",
+                        "sender": {
+                            "name": "Bob Smith",
+                            "id": "121313"
+                        },
+                        "recipients": ["055 0840 7317","0934 861 9007","055 0840 7318","055 0840 7317"],
+                        "message": "This is from new sms-gateway"
+                    };
+
+                    request(app)
+                              .post('/message')
+                              .set("Authorization", "basic " + new Buffer("disabledApplication:Secret123").toString("base64"))
+                              .send(data)
+                              .expect(400)
+                              .expect("Unable to send sms as application 'disabledapplication' has been disabled",done);
+                });
+            });
 });
 
   describe('GET message details',function(){
