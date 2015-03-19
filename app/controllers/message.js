@@ -134,10 +134,10 @@ function createMessage(req){
 /**
  * errorHandler - for handling the error and sending it to the client.
  *
- * @param  {Number} code HTPP code which needs to be sent to the client
+ * @param  {Number} code HTPP code that needs to be sent to the client
  * @param  {error} err  error object
  * @param  {object} res  http response object
- */ 
+ */
 function errorHandler(code,err,res){
   var messages=err;
   if (typeof err.errors != 'undefined'){

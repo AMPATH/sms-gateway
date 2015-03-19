@@ -205,7 +205,7 @@ router.post('/password', function(req,res,next){
 /**
  * errorHandler - for handling the error and sending it to the client.
  *
- * @param  {Number} code HTPP code which needs to be sent to the client
+ * @param  {Number} code HTPP code that needs to be sent to the client
  * @param  {error} err  error object
  * @param  {object} res  http response object
  */

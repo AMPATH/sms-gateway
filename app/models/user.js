@@ -6,6 +6,9 @@ var mongoose = require('mongoose'),
 
 
 
+/**
+ * Defines User model
+ */
 var UserSchema = new Schema({
   name: {type: String, required: "name is required",  unique: true},
   password: {type: String, required: "secret is required"}
@@ -41,7 +44,11 @@ UserSchema.pre('save',function(next){
 
 UserSchema.plugin(uniqueValidator,{message: "User with name '{VALUE}' already exists."});
 
+/**
+ * Compares password
+ */
 UserSchema.methods.comparePassword = function(candidatePassword, cb) {
+
     bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
         if (err) return cb(err);
         cb(null, isMatch);
@@ -49,6 +56,14 @@ UserSchema.methods.comparePassword = function(candidatePassword, cb) {
 };
 
 
+/**
+ * Checks if the user is authorized
+ *
+ * @param  {String} username description
+ * @param  {String} password description
+ * @param  {callback} cb callback which has two parameters  i.e error & user
+ * object. if the match is found, it will return user object otherwise an error is returned.
+ */
 UserSchema.statics.authorize = function (username,password, cb) {
 
   this.findOne({name: username},function(err,user){
