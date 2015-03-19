@@ -37,7 +37,7 @@ var auth = function (req, res, next) {
         res.set('WWW-Authenticate', 'Basic realm=Authorization Required');
         return res.sendStatus(401);
       }
-      // If the authentication sucessful then assign the admin user object in request
+      // If the authentication is successful then assign the admin user object in request
       req.user = usr;
       next();
     });
@@ -51,7 +51,7 @@ var auth = function (req, res, next) {
 /**
  * GET /admin/application.
  *
- * This api respond with all the registered applications.
+ * This api responds with all the registered applications.
  */
 router.get('/application',function(req, res, next){
   Application.find(function(err,applications){
@@ -65,7 +65,7 @@ router.get('/application',function(req, res, next){
  * POST /admin/application
  *
  * This api is for creating a new application
- * It expect a json data with name & secret of application.
+ * It expects json data with the application name and secret of application.
  * e.g
  * {
  *  "name": "application_name",
@@ -86,7 +86,7 @@ router.post('/application',function(req,res,next){
  * GET /admin/application/<application_name>
  *
  * This api is for getting details of an individual application
- * by specify its name
+ * by specifying its name.
  */
 router.get('/application/:name',function(req, res, next){
   Application.findOne({name: req.params.name},function(err,application){
@@ -104,7 +104,7 @@ router.get('/application/:name',function(req, res, next){
 /**
  * POST /admin/application/<application_name>/disable
  *
- * API for disable specified application.
+ * API for disabling a specified application.
  *
  */
 router.post('/application/:name/disable', function(req,res,next){
@@ -126,7 +126,7 @@ router.post('/application/:name/disable', function(req,res,next){
 /**
  * POST /admin/application/<application_name>/enable
  *
- * API for enable specified application.
+ * API for enabling a specified application.
  *
  */
 router.post('/application/:name/enable', function(req,res,next){
@@ -148,8 +148,8 @@ router.post('/application/:name/enable', function(req,res,next){
 /**
  * POST /admin/application/<application_name>/limit
  *
- * API for changing sms limit of a specified application.
- * It expect a json data with new limit as shown below.
+ * API for changing the sms limit of a specified application.
+ * It expects json data with the new limit as shown below.
  * e.g
  * {
  *  "limit": 20000
@@ -180,7 +180,7 @@ router.post('/application/:name/enable', function(req,res,next){
  * POST /admin/password
  *
  * API for changing admin user's password
- * It expect a json data with new limit as shown below.
+ * It expects json data with new password as shown below.
  * e.g
  * {
  *  "new_password": "this is my new password"
@@ -203,9 +203,9 @@ router.post('/password', function(req,res,next){
 });
 
 /**
- * errorHandler - for handling the error and send it to the client.
+ * errorHandler - for handling the error and sending it to the client.
  *
- * @param  {Number} code HTPP code which needs to send to client
+ * @param  {Number} code HTPP code which needs to be sent to the client
  * @param  {error} err  error object
  * @param  {object} res  http response object
  */
