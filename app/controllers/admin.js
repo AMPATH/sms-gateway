@@ -74,6 +74,26 @@ router.get('/application',function(req, res, next){
  *
  */
 router.post('/application',function(req,res,next){
+  var validation={
+      "name": {presence: true,
+                format: {
+                      pattern: /^[ A-Za-z0-9_-]*$/,
+                      message: "can contain alphanumeric - and _ symbols only"
+                },
+                length: {
+                      maximum: 256,
+                      message: "must not be more than 256 chars long"
+                }
+              }
+
+    };
+
+    var err = validate(req.body,validation);
+
+    if(err){
+      return res.status(400).send(err);
+    }
+
   application = new Application({name: req.body.name, secret: req.body.secret, active: true, send: {limit: 200000, count: 0}});
   application.save(function(err,app){
     if (err) return errorHandler(400,err,res);

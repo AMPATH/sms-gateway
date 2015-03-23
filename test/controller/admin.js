@@ -131,7 +131,17 @@ describe('Admin Controller', function(){
         .set("Authorization", "basic " + new Buffer("admin:@dm1n").toString("base64"))
         .send({"secret": "123"})
         .expect(400)
-        .expect("name is required",done);
+        .expect("{\"name\":[\"Name can\'t be blank\"]}",done);
+    });
+
+    it('fail if name contains symbols other than -_',function(done){
+          request(app)
+            .post('/admin/application')
+            .set("Authorization", "basic " + new Buffer("admin:@dm1n").toString("base64"))
+            .send({"name": "new~!@#$%^&*name"})
+            .send({"secret": "123"})
+            .expect(400)
+            .expect("{\"name\":[\"Name can contain alphanumeric - and _ symbols only\"]}",done);
     });
 
     it('fail without secret',function(done){
@@ -141,6 +151,23 @@ describe('Admin Controller', function(){
         .send({"name": "new name"})
         .expect(400)
         .expect("secret is required",done);
+    });
+
+    it('create with valid alphanumeric name containing - and _',function(done){
+          var expectedJson={
+            "name": "new-app_123",
+            "active": true,
+            "send": {
+               "limit": 200000,
+               "count": 0
+            }
+    };
+    request(app)
+            .post('/admin/application')
+            .set("Authorization", "basic " + new Buffer("admin:@dm1n").toString("base64"))
+            .send({"name": "new-app_123","secret": "123"})
+            .expect(201)
+            .expect(JSON.stringify(expectedJson),done);
     });
 
     it('create with valid name and secret',function(done){
