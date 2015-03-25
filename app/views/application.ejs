@@ -1,31 +1,33 @@
 <% include header %>
-<script language="javascript">
-
-       function DoPostDisable(name){
-          $.post("/admin-ui/application/" + name + "/disable");
-          location.reload();
-       }
-
-       function DoPostEnable(name){
-             $.post("/admin-ui/application/" + name + "/enable");
-             location.reload();
-       }
-
-</script>
 <% include menu %>
 
-<form action="/admin-ui/application/newapp/limit" method="post">
 <div class="container">
-    <p>Name :  <%= name %> </p>
-    <p>Active :  <%= active %> </p>
-    <p>Limit :  <%= limit %> </p>
-    <p>Count :  <%= count %> </p>
+<form action="/admin-ui/application/newapp/limit" method="post">
+    <p>Name :  <%= app.name %> </p>
+    <p>Active :  <%= app.active %> </p>
+    <p>Limit :  <%= app.send.limit %> </p>
+    <p>Count :  <%= app.send.count %> </p>
 
-    <a href="javascript:DoPostEnable('<%= name %>')">Enable</A>
-    <a href="javascript:DoPostDisable('<%= name %>')">Disable</A>
+    <a href="javascript:DoPostEnable('<%= app.name %>')">Enable</A>
+    <a href="javascript:DoPostDisable('<%= app.name %>')">Disable</A>
     <br>
     New limit:<input type="text" id ="limit" name ="limit">  <input type="submit" value="Change limit">
 
 </div> <!-- /container -->
 </form>
+<script language="javascript">
+
+       function DoPostDisable(name){
+          $.post("/admin/application/" + name + "/disable",function(){
+            location.reload();
+          });
+       }
+
+       function DoPostEnable(name){
+             $.post("/admin/application/" + name + "/enable",function(){
+               location.reload();
+             });
+       }
+
+</script>.
 <% include footer %>

@@ -55,74 +55,13 @@ router.get('/application/:name', function (req, res, next) {
         if(application){
             res.render('application',{
                     title: 'SMS Gateway',
-                    name : application.name,
-                    active : application.active,
-                    limit: application.send.limit,
-                    count: application.send.count,
+                    app: application,
                     menu: 'application'
                     });
         }
     });
 });
 
-/**
- * Disable application
- *
- * @param  {object} req  http request object
- * @param  {object} res  http response object
- * @param  {callback} next http callback for the next middleware or route
- */
-router.post('/application/:name/disable', function(req,res,next){
-    var query = {name: req.params.name, active: 'true'};
-    var update = {active: 'false'};
-    var options = {new: true};
-
-    Application.findOneAndUpdate(query, update, options, function(err, application) {
-      if (err) {
-        return errorHandler(404,err,res);
-      }
-      if(application){
-              console.log(application);
-              res.render('application',{
-                                  title: 'SMS Gateway',
-                                  name : application.name,
-                                  active : application.active,
-                                  limit: application.send.limit,
-                                  count: application.send.count,
-                                  menu: 'application'
-                                  });
-      }
-    });
-});
-
-/**
- * Enable application
- *
- * @param  {object} req  http request object
- * @param  {object} res  http response object
- * @param  {callback} next http callback for the next middleware or route
- */
-router.post('/application/:name/enable', function(req,res,next){
-    var query = {name: req.params.name, active: 'false'};
-    var update = {active: 'true'};
-    var options = {new: true};
-
-    Application.findOneAndUpdate(query, update, options, function(err, application) {
-      if (err) {
-       return errorHandler(404,err,res);
-      }
-      if(application){
-              res.render('application',{
-                                  title: 'SMS Gateway',
-                                  name : application.name,
-                                  active : application.active,
-                                  limit: application.send.limit,
-                                  count: application.send.count,
-                                  menu: 'application'
-                                  });
-      }
-    });
-});
 
 /**
  * isInteger - check whether the input data is an integer type or not
