@@ -3,17 +3,35 @@
 
 <div class="container">
 
-<h1><%= title %></h1>
-<ul>
-    <% for(var i=0; i < applicationsList.length; i++) { %>
-        <li>
-            <a href='/admin-ui/application/<%= applicationsList[i].name %>'>
-                <%= applicationsList[i].name %>
-            </a>
-        </li>
-    <% } %>
-</ul>
+<h3>Applications</h3>
 
+<table class="table table-hover">
+<thead>
+  <tr>
+    <th>#</th>
+    <th>Name</th>
+    <th>Limit</th>
+    <th>Count</th>
+    <th>Active</th>
+  </tr>
+</thead>
+<tbody>
+<% for(var i=0; i < applicationsList.length; i++) { %>
+<tr>
+<td><%= i+1 %></td>
+  <td>
+      <a href='/admin-ui/application/<%= applicationsList[i].name %>'>
+          <%= applicationsList[i].name %>
+      </a>
+  </td>
+  <td><%= applicationsList[i].send.limit %></td>
+  <td><%= applicationsList[i].send.count %></td>
+  <td><% if(applicationsList[i].active){%><span class="glyphicon glyphicon-ok green" aria-hidden="true"></span> <%}else{%><span class="glyphicon glyphicon-remove red" aria-hidden="true"></span>  <%}%></td>
 
+</tr>
+<% } %>
+
+</tbody>
+</table>
 </div>  <!--/container -->
 <% include footer %>
