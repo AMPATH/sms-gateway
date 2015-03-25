@@ -50,7 +50,8 @@ module.exports = function (grunt) {
           'app.js',
           'app/**/*.js',
           'config/*.js',
-          'provider/*.js'
+          'provider/*.js',
+          'lib/*.js'
         ],
         tasks: ['develop', 'delayed-livereload']
       },

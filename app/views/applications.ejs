@@ -1,0 +1,19 @@
+<% include header %>
+<% include menu %>
+
+<div class="container">
+
+<h1><%= title %></h1>
+<ul>
+    <% for(var i=0; i < applicationsList.length; i++) { %>
+        <li>
+            <a href='/admin-ui/application/<%= applicationsList[i].name %>'>
+                <%= applicationsList[i].name %>
+            </a>
+        </li>
+    <% } %>
+</ul>
+
+
+</div>  <!--/container -->
+<% include footer %>
