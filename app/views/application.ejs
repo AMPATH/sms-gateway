@@ -2,17 +2,44 @@
 <% include menu %>
 
 <div class="container">
-<form action="/admin-ui/application/newapp/limit" method="post">
-    <p>Name :  <%= app.name %> </p>
-    <p>Active :  <%= app.active %> </p>
-    <p>Limit :  <%= app.send.limit %> </p>
-    <p>Count :  <%= app.send.count %> </p>
 
-    <a href="javascript:DoPostEnable('<%= app.name %>')">Enable</A>
-    <a href="javascript:DoPostDisable('<%= app.name %>')">Disable</A>
-    <br>
-    New limit:<input type="text" id ="limit" name ="limit">  <input type="submit" value="Change limit">
+<ol class="breadcrumb">
+  <li><a href="/admin-ui">Home</a></li>
+  <li><a href="/admin-ui/applications">Applications</a></li>
+  <li class="active"><%= app.name %> </li>
+</ol>
 
+<form action="/admin-ui/application/<%= app.name %>/limit" method="post">
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title"><%= app.name %></h3>
+  </div>
+  <div class="panel-body">
+    <table class="table">
+      <tr>
+        <td><strong>Active :</strong></td>
+        <td>  <% if(app.active){%><span class="glyphicon glyphicon-ok green" aria-hidden="true"></span> <%}else{%><span class="glyphicon glyphicon-remove red" aria-hidden="true"></span>  <%}%> </td>
+        <td>
+          <% if(app.active){%>
+            <a href="javascript:DoPostDisable('<%= app.name %>')">Disable</A>
+          <% }else{ %>
+            <a href="javascript:DoPostEnable('<%= app.name %>')">Enable</A>
+          <% } %>
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Limit :</strong></td>
+        <td><%= app.send.limit %></td>
+        <td><input type="text" id="limit" name="limit"> <input type="submit" value="Change limit"></td>
+      </tr>
+      <tr>
+        <td><strong>Count :</strong></td>
+        <td><%= app.send.count %></td>
+        <td></td>
+      </tr>
+    </table>
+  </div>
+</div>
 </div> <!-- /container -->
 </form>
 <script language="javascript">

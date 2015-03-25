@@ -51,14 +51,15 @@ router.get('/applications', function (req, res, next) {
  */
 router.get('/application/:name', function (req, res, next) {
     Application.findOne({name: req.params.name},function(err,application){
-        if (err) return errorHandler(404,err,res);
         if(application){
-            res.render('application',{
+          return  res.render('application',{
                     title: 'SMS Gateway',
                     app: application,
                     menu: 'application'
                     });
         }
+
+        return res.status(404).send('Not found');
     });
 });
 
@@ -70,7 +71,7 @@ router.get('/application/:name', function (req, res, next) {
  * @return {boolean} true if it is integer otherwise false.
  */
 function isInteger(x) {
-  return (typeof x === 'number') && (Math.round(x) === x);
+  return (typeof x === 'number') && (Math.round(x) === x) && (x > 0);
 }
 
 /**
@@ -81,35 +82,35 @@ function isInteger(x) {
  * @param  {callback} next http callback for the next middleware or route
  */
 router.post('/application/:name/limit', function(req,res,next){
-
     var query = {name: req.params.name};
     var newLimit = req.body.limit;
     if(!isInteger(Number(newLimit))){
         res.render('error',{
                             error : { status : 500},
-                            message : 'Limit should be a number'});
-       // return errorHandler(404,"Limit should be a number",res);
+                            title: 'SMS Gateway',
+                            menu: 'application',
+                            message : 'Limit should be a number greater than 0'});
+                            return;
     }
+    console.log(newLimit);
     var update = {'send.limit': newLimit};
     var options = {new: true};
-
     Application.findOneAndUpdate(query, update, options, function(err, application) {
       if (err) {
         res.render('error',{
-                                    error : { status : 500},
-                                    message : 'Unable to update limit'});
-        //return errorHandler(404,err,res);
+          error : { status : 500},
+          menu: 'application',
+          title: 'SMS Gateway',
+          message : 'Unable to update limit'});
+          return;
       }
       if(application){
               res.render('application',{
-                                                 title: 'SMS Gateway',
-                                                 name : application.name,
-                                                 active : application.active,
-                                                 limit: application.send.limit,
-                                                 count: application.send.count,
-                                                 menu: 'application'
-                                                 });
-      }
+             title: 'SMS Gateway',
+             app: application,
+             menu: 'application'
+             });
+           }
     });
 });
 
