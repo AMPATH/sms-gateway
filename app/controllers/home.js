@@ -35,7 +35,8 @@ router.get('/applications', function (req, res, next) {
         if (err) return errorHandler(500,err,res);
         res.render('applications',{
         title: 'SMS Gateway',
-        applicationsList : applications
+        applicationsList : applications,
+        menu: 'application'
         });
       });
 
@@ -57,7 +58,8 @@ router.get('/application/:name', function (req, res, next) {
                     name : application.name,
                     active : application.active,
                     limit: application.send.limit,
-                    count: application.send.count
+                    count: application.send.count,
+                    menu: 'application'
                     });
         }
     });
@@ -86,7 +88,8 @@ router.post('/application/:name/disable', function(req,res,next){
                                   name : application.name,
                                   active : application.active,
                                   limit: application.send.limit,
-                                  count: application.send.count
+                                  count: application.send.count,
+                                  menu: 'application'
                                   });
       }
     });
@@ -114,7 +117,8 @@ router.post('/application/:name/enable', function(req,res,next){
                                   name : application.name,
                                   active : application.active,
                                   limit: application.send.limit,
-                                  count: application.send.count
+                                  count: application.send.count,
+                                  menu: 'application'
                                   });
       }
     });
@@ -163,7 +167,8 @@ router.post('/application/:name/limit', function(req,res,next){
                                                  name : application.name,
                                                  active : application.active,
                                                  limit: application.send.limit,
-                                                 count: application.send.count
+                                                 count: application.send.count,
+                                                 menu: 'application'
                                                  });
       }
     });

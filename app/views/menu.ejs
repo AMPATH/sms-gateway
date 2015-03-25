@@ -7,17 +7,15 @@
            <span class="icon-bar"></span>
            <span class="icon-bar"></span>
          </button>
-         <a class="navbar-brand" href="#">SMS Gateway</a>
+         <a class="navbar-brand" href="/admin-ui">SMS Gateway</a>
        </div>
        <div id="navbar" class="navbar-collapse collapse">
          <ul class="nav navbar-nav">
-           <li class="active"><a href="/admin-ui/applications">Applications</a></li>
-           <li><a href="/admin-ui/change">Change Password</a></li>
+           <li <%if(!locals.menu){%>class="active"<%}%> ><a href="/admin-ui">Dashboard</a></li>
+           <li <%if(locals.menu && menu==='application') {%>class="active"<%}%> ><a href="/admin-ui/applications">Applications</a></li>
          </ul>
          <ul class="nav navbar-nav navbar-right">
-           <li><a href="../navbar/">Default</a></li>
-           <li class="active"><a href="./">Static top <span class="sr-only">(current)</span></a></li>
-           <li><a href="../navbar-fixed-top/">Fixed top</a></li>
+            <li><a href="/admin-ui/change">Change Password</a></li>
          </ul>
        </div><!--/.nav-collapse -->
      </div>
