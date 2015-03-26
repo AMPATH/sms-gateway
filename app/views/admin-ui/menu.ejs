@@ -11,11 +11,11 @@
        </div>
        <div id="navbar" class="navbar-collapse collapse">
          <ul class="nav navbar-nav">
-           <li <%if(!locals.menu){%>class="active"<%}%> ><a href="/admin-ui">Dashboard</a></li>
-           <li <%if(locals.menu && menu==='application') {%>class="active"<%}%> ><a href="/admin-ui/applications">Applications</a></li>
+           <li <%if(!locals.menu){%>class="active"<%}%> ><a href="/admin-ui"><span class="glyphicon glyphicon-dashboard" aria-hidden="true"></span> Dashboard</a></li>
+           <li <%if(locals.menu && menu==='application') {%>class="active"<%}%> ><a href="/admin-ui/applications"><span class="glyphicon glyphicon-phone" aria-hidden="true"></span> Applications</a></li>
          </ul>
          <ul class="nav navbar-nav navbar-right">
-            <li><a href="/admin-ui/change">Change Password</a></li>
+            <li><a href="/admin-ui/change"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Change Password</a></li>
          </ul>
        </div><!--/.nav-collapse -->
      </div>
