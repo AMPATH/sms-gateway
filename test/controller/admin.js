@@ -303,10 +303,24 @@ describe('Admin Controller', function(){
                              .set("Authorization", "basic " + new Buffer("admin:@dm1n").toString("base64"))
                              .send({"name": "new_application_for_NaN_limit_test","secret": "Secret","limit": 5000.89 })
                              .expect(404)
-                             .expect("Limit should be a number",done);
+                             .expect("Limit should be a number, with value greater than zero",done);
                       });
 
           });
+
+     it('attempt to change sms limit with a negative number should return error message', function(done){
+                              application = new Application({name: "new_application_for_negative_limit_test", secret: "Secret", active: true, send: {limit: 2000, count: 0}});
+                              application.save(function(err){
+                                expect(err).to.be(null);
+                                request(app)
+                                  .post('/admin/application/new_application_for_negative_limit_test/limit')
+                                  .set("Authorization", "basic " + new Buffer("admin:@dm1n").toString("base64"))
+                                  .send({"name": "new_application_for_negative_limit_test","secret": "Secret","limit": -5000 })
+                                  .expect(404)
+                                  .expect("Limit should be a number, with value greater than zero",done);
+                           });
+
+               });
 
      it('attempt to change sms limit with a NaN should return error message', function(done){
                               application = new Application({name: "new_application_for_NaN_limit_test", secret: "Secret", active: true, send: {limit: 2000, count: 0}});
@@ -317,7 +331,7 @@ describe('Admin Controller', function(){
                                   .set("Authorization", "basic " + new Buffer("admin:@dm1n").toString("base64"))
                                   .send({"name": "new_application_for_NaN_limit_test","secret": "Secret","limit": "sdjcaiuhfewh" })
                                   .expect(404)
-                                  .expect("Limit should be a number",done);
+                                  .expect("Limit should be a number, with value greater than zero",done);
                            });
 
                });
