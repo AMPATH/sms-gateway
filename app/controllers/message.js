@@ -12,6 +12,8 @@ module.exports = function (app) {
     app.use('/', router);
 };
 
+
+
 /**
  * auth middleware responsible for doing basic authentication
  * for all admin REST apis

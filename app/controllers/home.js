@@ -18,7 +18,7 @@ module.exports = function (app) {
  * @param  {callback} next http callback for the next middleware or route
  */
 router.get('/', function (req, res, next) {
-    res.render('index', {
+    res.render('admin-ui/index', {
       title: 'SMS Gateway',
     });
 });
@@ -33,7 +33,7 @@ router.get('/', function (req, res, next) {
 router.get('/applications', function (req, res, next) {
     Application.find(function(err,applications){
         if (err) return errorHandler(500,err,res);
-        res.render('applications',{
+        res.render('admin-ui/applications',{
         title: 'SMS Gateway',
         applicationsList : applications,
         menu: 'application'
@@ -52,7 +52,7 @@ router.get('/applications', function (req, res, next) {
 router.get('/application/:name', function (req, res, next) {
     Application.findOne({name: req.params.name},function(err,application){
         if(application){
-          return  res.render('application',{
+          return  res.render('admin-ui/application',{
                     title: 'SMS Gateway',
                     app: application,
                     menu: 'application'
@@ -85,19 +85,18 @@ router.post('/application/:name/limit', function(req,res,next){
     var query = {name: req.params.name};
     var newLimit = req.body.limit;
     if(!isInteger(Number(newLimit))){
-        res.render('error',{
+        res.render('admin-ui/error',{
                             error : { status : 500},
                             title: 'SMS Gateway',
                             menu: 'application',
                             message : 'Limit should be a number greater than 0'});
                             return;
     }
-    console.log(newLimit);
     var update = {'send.limit': newLimit};
     var options = {new: true};
     Application.findOneAndUpdate(query, update, options, function(err, application) {
       if (err) {
-        res.render('error',{
+        res.render('admin-ui/error',{
           error : { status : 500},
           menu: 'application',
           title: 'SMS Gateway',
@@ -105,7 +104,7 @@ router.post('/application/:name/limit', function(req,res,next){
           return;
       }
       if(application){
-              res.render('application',{
+          res.render('admin-ui/application',{
              title: 'SMS Gateway',
              app: application,
              menu: 'application'
@@ -122,7 +121,7 @@ router.post('/application/:name/limit', function(req,res,next){
  * @param  {callback} next http callback for the next middleware or route
  */
 router.get('/change', function(req,res,next){
-                res.render('password',{
+                res.render('admin-ui/password',{
                                             title: 'Change password'
                                        });
 });
@@ -147,7 +146,7 @@ router.post('/password', function(req,res,next){
                 if (err) {
                     return errorHandler(400,"Unable to update password for user '" + user.name + "'",res);
                 }
-                res.render('index',{
+                res.render('admin-ui/index',{
                                             title: 'SMS Gateway'
                                        });
         });
