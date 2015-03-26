@@ -150,7 +150,7 @@ router.post('/application/:name/enable', function(req,res,next){
     var query = {name: req.params.name};
     var newLimit = req.body.limit;
     if(!isInteger(newLimit)){
-        return errorHandler(404,"Limit should be a number",res);
+        return errorHandler(404,"Limit should be a number, with value greater than zero",res);
     }
     var update = {'send.limit': newLimit};
     var options = {new: true};
@@ -217,5 +217,5 @@ function errorHandler(code,err,res){
  * @return {boolean} true if it is integer otherwise false.
  */
 function isInteger(x) {
-  return (typeof x === 'number') && (Math.round(x) === x);
+  return (typeof x === 'number') && (Math.round(x) === x) && (x > 0);
 }
