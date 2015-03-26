@@ -31,7 +31,7 @@ router.get('/', function (req, res, next) {
  * @param  {callback} next http callback for the next middleware or route
  */
 router.get('/applications', function (req, res, next) {
-    Application.find(function(err,applications){
+    Application.find({}).sort({name: 1}).exec(function(err,applications){
         if (err) return errorHandler(500,err,res);
         res.render('admin-ui/applications',{
         title: 'SMS Gateway',
