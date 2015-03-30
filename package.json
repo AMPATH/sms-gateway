@@ -5,6 +5,7 @@
   "scripts": {
     "start": "node app.js"
   },
+  "main": "app.js"
   "dependencies": {
     "basic-auth": "^1.0.0",
     "bcrypt": "~0.8.1",
