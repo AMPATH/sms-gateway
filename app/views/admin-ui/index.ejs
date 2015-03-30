@@ -3,45 +3,52 @@
 <script src="/js/Chart.min.js"></script>
 <script language="javascript">
         $( document ).ready(function() {
-            var ctx = $("#appSMSUsageChart").get(0).getContext("2d");
+
+            var ctx = $("#chartCanvas").get(0).getContext("2d");
             var options = {};
             var appNames = [];
             var appSMSLimit = [];
             var appSMSCount = [];
+
             $.get("/admin/application",function(data){
+
                 for(i =0; i < data.length; i++){
                   appNames.push(data[i].name);
                   appSMSLimit.push(data[i].send.limit);
                   appSMSCount.push(data[i].send.count);
                 }
-            var data = {
-                        labels: appNames,
-                        datasets: [
-                            {
-                                label: "Application SMS Limit",
-                                fillColor: "rgba(50,197,197,0.5)",
-                                strokeColor: "rgba(50,197,197,0.8)",
-                                highlightFill: "rgba(50,197,197,0.75)",
-                                highlightStroke: "rgba(50,197,197,1)",
-                                data: appSMSLimit
-                            },
 
-                            {
-                                 label: "Application SMS Count",
-                                 fillColor: "rgba(235,31,31,0.2)",
-                                 strokeColor: "rgba(235,31,31,1)",
-                                 highlightFill: "rgba(235,31,31,0.75)",
-                                 highlightStroke: "rgba(235,31,31,1)",
-                                 data: appSMSCount
-                            }
-                        ]
-                    };
-            var myBarChart = new Chart(ctx).Bar(data,options);
-             });
+                var data = {
+                            labels: appNames,
+                            datasets: [
+                                {
+                                    label: "Application SMS Limit",
+                                    fillColor: "rgba(50,197,197,0.5)",
+                                    strokeColor: "rgba(50,197,197,0.8)",
+                                    highlightFill: "rgba(50,197,197,0.75)",
+                                    highlightStroke: "rgba(50,197,197,1)",
+                                    data: appSMSLimit
+                                },
+
+                                {
+                                     label: "Application SMS Count",
+                                     fillColor: "rgba(235,31,31,0.2)",
+                                     strokeColor: "rgba(235,31,31,1)",
+                                     highlightFill: "rgba(235,31,31,0.75)",
+                                     highlightStroke: "rgba(235,31,31,1)",
+                                     data: appSMSCount
+                                }
+                            ]
+                };
+
+                var appSMSUsageChart = new Chart(ctx).Bar(data,options);
+                var legendHTML = appSMSUsageChart.generateLegend()
+                $(legendHTML).insertAfter(".chartContainer");
+            });
         });
 </script>
-<div class="container">
-    <canvas id="appSMSUsageChart" width="600" height="400" style="border:1px solid #000000;">
+<div class="chartContainer">
+    <canvas id="chartCanvas" width="600" height="400" style="border:1px solid #000000;">
     Your browser does not support the HTML5 canvas tag.
     </canvas>
 </div>
