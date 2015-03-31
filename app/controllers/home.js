@@ -75,6 +75,77 @@ function isInteger(x) {
 }
 
 /**
+ * Register application view page
+ *
+ * @param  {object} req  http request object
+ * @param  {object} res  http response object
+ * @param  {callback} next http callback for the next middleware or route
+ */
+router.get('/register', function (req, res, next) {
+    res.render('admin-ui/register',{
+                                   title: 'Register a new application',
+                                   menu: 'register'
+               });
+});
+
+
+/**
+ * Register a new application
+ *
+ * @param  {object} req  http request object
+ * @param  {object} res  http response object
+ * @param  {callback} next http callback for the next middleware or route
+ */
+router.post('/application', function(req,res,next){
+    var validation={
+          "name": {presence: true,
+                    format: {
+                          pattern: /^[ A-Za-z0-9_-]*$/,
+                          message: "can contain alphanumeric - and _ symbols only"
+                    },
+                    length: {
+                          maximum: 256,
+                          message: "must not be more than 256 chars long"
+                    }
+                  },
+          "secret": {
+                    presence: true
+                    }
+
+     };
+
+    var err = validate(req.body,validation);
+    if(err){
+        res.render('admin-ui/error',{
+                            error : { status : 500},
+                            title: 'SMS Gateway',
+                            menu: 'register',
+                            message : 'Please enter a valid application name. Name can contain alphanumeric,- and _ only'});
+                            return;
+    }
+
+    application = new Application({name: req.body.name, secret: req.body.secret, active: true, send: {limit: 200000, count: 0}});
+      application.save(function(err,app){
+        if (err) {
+        res.render('admin-ui/error',{
+                  error : { status : 500},
+                  menu: 'register',
+                  title: 'SMS Gateway',
+                  message : 'Unable to register application.'});
+                  return;
+              }
+
+        if(application){
+                  res.render('admin-ui/application',{
+                     title: 'SMS Gateway',
+                     app: application,
+                     menu: 'application'
+                     });
+         }
+      });
+});
+
+/**
  * Change application limit
  *
  * @param  {object} req  http request object
