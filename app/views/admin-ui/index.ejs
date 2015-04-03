@@ -5,7 +5,10 @@
         $( document ).ready(function() {
 
             var ctx = $("#chartCanvas").get(0).getContext("2d");
-            var options = {};
+            var options = {
+            
+              };
+
             var appNames = [];
             var appSMSLimit = [];
             var appSMSCount = [];
@@ -47,9 +50,11 @@
             });
         });
 </script>
+<div class="container">
 <div class="chartContainer">
     <canvas id="chartCanvas" width="600" height="400" style="border:1px solid #000000;">
     Your browser does not support the HTML5 canvas tag.
     </canvas>
+</div>
 </div>
 <% include footer %>

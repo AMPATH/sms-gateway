@@ -6,9 +6,24 @@
   color: red;
 }
 
-
 .form-control-inline {
     min-width: 0;
     width: auto;
     display: inline;
+}
+
+.bar-legend{
+  list-style:none;
+}
+
+.bar-legend li{
+  margin-bottom: 5px;
+}
+
+.bar-legend span{
+  margin-right: 5px;
+  width: 20px;
+  height: 20px;
+  display: box;
+  float:left;
 }
