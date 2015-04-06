@@ -27,3 +27,7 @@
   display: box;
   float:left;
 }
+
+.chartContainer{
+  margin-top: 50px;
+}

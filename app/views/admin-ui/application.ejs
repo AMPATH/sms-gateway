@@ -1,6 +1,5 @@
 <% include header %>
 <% include menu %>
-
 <div class="container">
 
 <ol class="breadcrumb">
@@ -21,36 +20,71 @@
         <td>  <% if(app.active){%><span class="glyphicon glyphicon-ok green" aria-hidden="true"></span> <%}else{%><span class="glyphicon glyphicon-remove red" aria-hidden="true"></span>  <%}%> </td>
         <td>
           <% if(app.active){%>
-            <a href="javascript:DoPostDisable('<%= app.name %>')">Disable</A>
+            <a href="javascript:doPostDisable('<%= app.name %>')">Disable</A>
           <% }else{ %>
-            <a href="javascript:DoPostEnable('<%= app.name %>')">Enable</A>
+            <a href="javascript:doPostEnable('<%= app.name %>')">Enable</A>
           <% } %>
         </td>
       </tr>
       <tr>
-        <td><strong>Limit :</strong></td>
+        <td><strong>Allocated SMS :</strong></td>
         <td><%= app.send.limit %></td>
-        <td><input type="text" id="limit" class="form-control form-control-inline" name="limit" placeholder="Enter new limit"> <input type="submit" value="Update" class="btn btn-sm btn-primary"></td>
+        <td><input type="text" id="limit" class="form-control form-control-inline" name="limit" placeholder="Update allocated SMS"> <input type="submit" value="Update" class="btn btn-sm btn-primary"></td>
       </tr>
       <tr>
-        <td><strong>Count :</strong></td>
+        <td><strong>Remaining SMS :</strong></td>
+        <td><%= app.send.limit - app.send.count %></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><strong>Used SMS :</strong></td>
         <td><%= app.send.count %></td>
         <td></td>
       </tr>
+
     </table>
   </div>
 </div>
+
+<h3>SMS history for <%= app.name %> </h3>
+
+<table class="table table-hover table-striped">
+<thead>
+  <tr>
+    <th>Sent date</th>
+    <th>Sender</th>
+    <th>Message</th>
+    <th>Number of recipients</th>
+  </tr>
+</thead>
+<% for(var i=0; i < messages.length; i++) { %>
+<tr>
+  <td>
+      <a href='/admin-ui/message/<%= messages[i].id %>'>
+          <%= moment(messages[i].date).format("MM-DD-YYYY") %>
+      </a>
+  </td>
+  <td><%= messages[i].sender.name %></td>
+  <td><%= messages[i].message %></td>
+  <td><%= messages[i].messageStatus.length %></td>
+
+</tr>
+<% } %>
+
+</tbody>
+</table>
+
 </div> <!-- /container -->
 </form>
 <script language="javascript">
 
-       function DoPostDisable(name){
+       function doPostDisable(name){
           $.post("/admin/application/" + name + "/disable",function(){
             location.reload();
           });
        }
 
-       function DoPostEnable(name){
+       function doPostEnable(name){
              $.post("/admin/application/" + name + "/enable",function(){
                location.reload();
              });

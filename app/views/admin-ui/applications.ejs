@@ -5,13 +5,14 @@
 
 <h3>Applications</h3>
 
-<table class="table table-hover">
+<table class="table table-hover table-striped">
 <thead>
   <tr>
     <th>#</th>
-    <th>Name</th>
-    <th>Limit</th>
-    <th>Count</th>
+    <th>Application name</th>
+    <th>Allocated SMS</th>
+    <th>Remaining SMS</th>
+    <th>Used SMS</th>
     <th>Active</th>
   </tr>
 </thead>
@@ -25,6 +26,7 @@
       </a>
   </td>
   <td><%= applicationsList[i].send.limit %></td>
+  <td><%= applicationsList[i].send.limit-applicationsList[i].send.count %></td>
   <td><%= applicationsList[i].send.count %></td>
   <td><% if(applicationsList[i].active){%><span class="glyphicon glyphicon-ok green" aria-hidden="true"></span> <%}else{%><span class="glyphicon glyphicon-remove red" aria-hidden="true"></span>  <%}%></td>
 

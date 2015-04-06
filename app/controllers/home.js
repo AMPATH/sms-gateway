@@ -1,14 +1,15 @@
 var express = require('express'),
     mongoose = require('mongoose'),
     Application = mongoose.model('Application'),
+    Message = mongoose.model('Message'),
     auth = require('../../lib/admin-auth'),
     router = express.Router(),
+    moment = require('moment'),
     validate = require("validate.js");
 
 module.exports = function (app) {
     app.use('/admin-ui',auth, router);
 };
-
 
 /**
  * Home page
@@ -52,15 +53,64 @@ router.get('/applications', function (req, res, next) {
 router.get('/application/:name', function (req, res, next) {
     Application.findOne({name: req.params.name},function(err,application){
         if(application){
-          return  res.render('admin-ui/application',{
-                    title: 'SMS Gateway',
-                    app: application,
-                    menu: 'application'
-                    });
+            Message.find({appName: req.params.name},function(err,messagesSentByThisApp){
+
+                  if(messagesSentByThisApp){
+                        messages = messagesSentByThisApp;
+                  }else{
+                        messages = [];
+                  }
+
+                  return  res.render('admin-ui/application',{
+                                                             title: 'SMS Gateway',
+                                                             app: application,
+                                                             menu: 'application',
+                                                             moment: moment,
+                                                             messages : messagesSentByThisApp
+                                                             });
+            });
+        }else{
+          res.render('admin-ui/error',{
+                                      error : { status : 500},
+                                      title: 'SMS Gateway',
+                                      menu: 'application',
+                                      message : 'Unable to get application details'});
+                                      return;
         }
 
-        return res.status(404).send('Not found');
     });
+
+});
+
+/**
+ * Message view page
+ *
+ * @param  {object} req  http request object
+ * @param  {object} res  http response object
+ * @param  {callback} next http callback for the next middleware or route
+ */
+router.get('/message/:id', function (req, res, next) {
+
+    Message.findById(req.params.id,function(err,messageObj){
+
+          if (err) {
+                  res.render('admin-ui/error',{
+                            error : { status : 500},
+                            menu: 'register',
+                            title: 'SMS Gateway',
+                            message : 'Unable to get message details.'});
+                            return;
+                   }
+
+          if(messageObj){
+                            res.render('admin-ui/message',{
+                               title: 'SMS Gateway',
+                               menu: 'application',
+                               moment: moment,
+                               messageDetails :messageObj
+                               });
+                   }
+          });
 });
 
 
@@ -87,6 +137,8 @@ router.get('/register', function (req, res, next) {
                                    menu: 'register'
                });
 });
+
+
 
 
 /**
@@ -139,7 +191,8 @@ router.post('/application', function(req,res,next){
                   res.render('admin-ui/application',{
                      title: 'SMS Gateway',
                      app: application,
-                     menu: 'application'
+                     menu: 'application',
+                     messages : []
                      });
          }
       });
@@ -175,14 +228,25 @@ router.post('/application/:name/limit', function(req,res,next){
           return;
       }
       if(application){
-          res.render('admin-ui/application',{
-             title: 'SMS Gateway',
-             app: application,
-             menu: 'application'
-             });
-           }
-    });
-});
+          Message.find({appName: req.params.name},function(err,messagesSentByThisApp){
+
+                            if(messagesSentByThisApp){
+                                  messages = messagesSentByThisApp;
+                            }else{
+                                  messages = [];
+                            }
+
+                            return  res.render('admin-ui/application',{
+                                                                       title: 'SMS Gateway',
+                                                                       app: application,
+                                                                       menu: 'application',
+                                                                       moment: moment,
+                                                                       messages : messagesSentByThisApp
+                                                                       });
+                      });
+                  }
+              });
+ });
 
 /**
  * Change admin password page
