@@ -1,0 +1,32 @@
+<% include header %>
+<% include menu %>
+
+<div class="container">
+<h3>Message details </h3>
+
+<table class="table table-hover table-striped">
+<thead>
+  <tr>
+    <th>Sent date</th>
+    <th>Sender</th>
+    <th>Message</th>
+    <th>Recipients</th>
+  </tr>
+</thead>
+
+<tr>
+  <td><%= moment(messageDetails.date).format("MM-DD-YYYY") %></td>
+  <td><%= messageDetails.sender.name %></td>
+  <td><%= messageDetails.message %></td>
+  <td>
+    <% for(var i=0; i < messageDetails.messageStatus.length; i++) { %>
+    <%= messageDetails.messageStatus[i] %>
+    <br>
+     <% } %>
+  </td>
+</tr>
+
+</tbody>
+</table>
+</div>
+<% include footer %>

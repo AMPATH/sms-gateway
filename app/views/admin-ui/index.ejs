@@ -11,36 +11,47 @@
 
             var appNames = [];
             var appSMSLimit = [];
-            var appSMSCount = [];
+            var appSMSUsed = [];
+            var appSMSRemaining = [];
 
             $.get("/admin/application",function(data){
 
                 for(i =0; i < data.length; i++){
                   appNames.push(data[i].name);
                   appSMSLimit.push(data[i].send.limit);
-                  appSMSCount.push(data[i].send.count);
+                  appSMSUsed.push(data[i].send.count);
+                  appSMSRemaining.push(data[i].send.limit - data[i].send.count);
                 }
 
                 var data = {
                             labels: appNames,
                             datasets: [
                                 {
-                                    label: "Application SMS Limit",
-                                    fillColor: "rgba(50,197,197,0.5)",
-                                    strokeColor: "rgba(50,197,197,0.8)",
-                                    highlightFill: "rgba(50,197,197,0.75)",
-                                    highlightStroke: "rgba(50,197,197,1)",
+                                    label: "Allocated SMS",
+                                    fillColor: "rgba(0,128,255,1)",
+                                    strokeColor: "rgba(0,128,255,1)",
+                                    highlightFill: "rgba(0,128,255,1)",
+                                    highlightStroke: "rgba(0,128,255,1)",
                                     data: appSMSLimit
                                 },
 
                                 {
-                                     label: "Application SMS Count",
-                                     fillColor: "rgba(235,31,31,0.2)",
+                                     label: "Remaining SMS",
+                                     fillColor: "rgba(102,204,0,1)",
+                                     strokeColor: "rgba(102,204,0,1)",
+                                     highlightFill: "rgba(102,204,0,1)",
+                                     highlightStroke: "rgba(102,204,0,1)",
+                                     data: appSMSRemaining
+                                },
+
+                                {
+                                     label: "Used SMS",
+                                     fillColor: "rgba(235,31,31,1)",
                                      strokeColor: "rgba(235,31,31,1)",
-                                     highlightFill: "rgba(235,31,31,0.75)",
+                                     highlightFill: "rgba(235,31,31,1)",
                                      highlightStroke: "rgba(235,31,31,1)",
-                                     data: appSMSCount
-                                }
+                                     data: appSMSUsed
+                                },
                             ]
                 };
 
