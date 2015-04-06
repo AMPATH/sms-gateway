@@ -54,8 +54,10 @@ router.post('/application',function(req,res,next){
                       maximum: 256,
                       message: "must not be more than 256 chars long"
                 }
-              }
+              },
+      "secret": {presence: true,
 
+                }
     };
 
     var err = validate(req.body,validation);
@@ -149,8 +151,19 @@ router.post('/application/:name/enable', function(req,res,next){
  router.post('/application/:name/limit', function(req,res,next){
     var query = {name: req.params.name};
     var newLimit = req.body.limit;
+    var validation={
+          "limit": {presence: true}
+
+        };
+
+    var err = validate(req.body,validation);
+
+    if(err){
+        return res.status(400).send(err);
+    }
+
     if(!isInteger(newLimit)){
-        return errorHandler(404,"Limit should be a number, with value greater than zero",res);
+        return errorHandler(400,"Limit should be a number, with value greater than zero",res);
     }
     var update = {'send.limit': newLimit};
     var options = {new: true};
