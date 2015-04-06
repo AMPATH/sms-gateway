@@ -150,7 +150,7 @@ describe('Admin Controller', function(){
         .set("Authorization", "basic " + new Buffer("admin:@dm1n").toString("base64"))
         .send({"name": "new name"})
         .expect(400)
-        .expect("secret is required",done);
+        .expect("{\"secret\":[\"Secret can\'t be blank\"]}",done);
     });
 
     it('create with valid alphanumeric name containing - and _',function(done){
@@ -302,7 +302,7 @@ describe('Admin Controller', function(){
                              .post('/admin/application/new_application_for_NaN_limit_test/limit')
                              .set("Authorization", "basic " + new Buffer("admin:@dm1n").toString("base64"))
                              .send({"name": "new_application_for_NaN_limit_test","secret": "Secret","limit": 5000.89 })
-                             .expect(404)
+                             .expect(400)
                              .expect("Limit should be a number, with value greater than zero",done);
                       });
 
@@ -316,7 +316,7 @@ describe('Admin Controller', function(){
                                   .post('/admin/application/new_application_for_negative_limit_test/limit')
                                   .set("Authorization", "basic " + new Buffer("admin:@dm1n").toString("base64"))
                                   .send({"name": "new_application_for_negative_limit_test","secret": "Secret","limit": -5000 })
-                                  .expect(404)
+                                  .expect(400)
                                   .expect("Limit should be a number, with value greater than zero",done);
                            });
 
@@ -330,7 +330,7 @@ describe('Admin Controller', function(){
                                   .post('/admin/application/new_application_for_NaN_limit_test/limit')
                                   .set("Authorization", "basic " + new Buffer("admin:@dm1n").toString("base64"))
                                   .send({"name": "new_application_for_NaN_limit_test","secret": "Secret","limit": "sdjcaiuhfewh" })
-                                  .expect(404)
+                                  .expect(400)
                                   .expect("Limit should be a number, with value greater than zero",done);
                            });
 
