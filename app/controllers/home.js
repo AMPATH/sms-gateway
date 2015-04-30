@@ -5,7 +5,8 @@ var express = require('express'),
     auth = require('../../lib/admin-auth'),
     router = express.Router(),
     moment = require('moment'),
-    validate = require("validate.js");
+    validate = require("validate.js"),
+    User = mongoose.model('User');
 
 module.exports = function (app) {
     app.use('/admin-ui',auth, router);
@@ -270,19 +271,50 @@ router.get('/change', function(req,res,next){
  */
 router.post('/password', function(req,res,next){
     var user = req.user;
-    var err = validate({password : req.body.new_password}, {password: {presence: true}});
+
+    var validation={
+              "old_password": {presence: true,
+                      },
+              "new_password": {
+                        presence: true
+                        }
+    };
+
+    var err = validate(req.body,validation);
 
         if (err){
-            return errorHandler(400,err.password.join(),res);
+           res.render('admin-ui/error',{
+                     error : { status : 500},
+                     menu: 'application',
+                     title: 'SMS Gateway',
+                     message : 'Password is required'});
+                     return;
         }
 
-        user.password = req.body.new_password;
-              user.save(function(err,app){
+    User.compareOldPassword(user.name,req.body.old_password,function(err,usr){
+      if (err) {
+         res.render('admin-ui/error',{
+                              error : { status : 500},
+                              menu: 'application',
+                              title: 'SMS Gateway',
+                              message : 'The password you have supplied is incorrect.'});
+                              return;
+         }
+
+        usr.password = req.body.new_password;
+              usr.save(function(err,app){
                 if (err) {
-                    return errorHandler(400,"Unable to update password for user '" + user.name + "'",res);
+                    res.render('admin-ui/error',{
+                                         error : { status : 500},
+                                         menu: 'application',
+                                         title: 'SMS Gateway',
+                                         message : 'Unable to change password.'});
+                                         return;
                 }
                 res.render('admin-ui/index',{
                                             title: 'SMS Gateway'
                                        });
         });
+});
+
 });
