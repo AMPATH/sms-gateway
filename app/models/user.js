@@ -84,4 +84,25 @@ UserSchema.statics.authorize = function (username,password, cb) {
   });
 };
 
+UserSchema.statics.compareOldPassword = function (username,password, cb) {
+
+  this.findOne({name: username},function(err,user){
+
+    if(err) {return cb(err);}
+
+    if (user){
+      user.comparePassword(password,function(err,isMatch){
+        if(isMatch){
+          return cb(null,user);
+        }else{
+          return cb(new Error("Error - the details you have provided are incorrect"));
+        }
+      });
+    }else{
+      return cb(new Error("Error - the details you have provided are incorrect"));
+    }
+  });
+};
+
+
 mongoose.model('User', UserSchema);
