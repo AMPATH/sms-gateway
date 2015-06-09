@@ -72,33 +72,41 @@ function msisdnFromUnformatted(unformatted, numberingScheme) {
 function postSMS(phonenumbers,msg,cb){
 
   var postData = querystring.stringify({
-    'Channel' : 'UK.VODAFONE',
+    'Channel' : 'KENYA.SAFARICOM',
     'MSISDN'  : phonenumbers.join(","),
     'Content' : msg,
-    'Receipt' : 1,
-    'Multitarget': 1
+    'CampaignID' : 120046,
+    'Shortcode': 20619,
+    'Multitarget': 1,
+    'Premium': 1
   });
 
   var options = {
-    hostname: 'localhost',
-    port: 8000,
-    path: '/users/sms',
+    hostname: 'relay1.uk.oxygen8.com',
+    port: 8084,
+    path: '/amp',
+    followRedirect: true,
     method: 'POST',
-    auth: 'username:password',
+    auth: 'ampath:@M975ke15',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
       'Content-Length': postData.length
     }
   };
 
+
   var req = http.request(options, function(res) {
     res.setEncoding('utf8');
     res.on('data', function (chunk) {
+      console.log("CHUNK DATA");
+      console.log(chunk);
       cb(null,chunk);
     });
   });
 
   req.on('error',function(e){
+    console.log("POST ERROR");
+    console.log(e);
     cb(e);
   });
 
@@ -163,7 +171,7 @@ var obj={
     var formattedPhonenumbers =  _.map(messageObj.messageStatus,function(ph){
       return msisdnFromUnformatted(ph.phonenumber,numberingSchemeKenya);
     });
-
+ console.log("MSISDN = " + formattedPhonenumbers);
     postSMS(formattedPhonenumbers,messageObj.message,function(err,data){
       if(err){
         updateMessageStatus(messageObj,'failed',null,cb);
@@ -192,8 +200,12 @@ var obj={
    * @param  {object} res  http response object
    * @param  {callback} next http callback for the next middleware or route
    */
-  processCallback: function(req, res, next){
+processCallback: function(req, res, next){
 
+    console.log("PROCESS CALL BACK IS HIT");
+    console.log("REQUEST = " + JSON.stringify(req.body));
+    console.log("REFERENCE = " + req.body.Reference);
+    console.log("STATUS = " + req.body.Status);
     var validation={
         "Reference": {presence: true},
         "Status": { presence: true}
@@ -202,15 +214,21 @@ var obj={
     var err = validate(req.body,validation);
 
     if(err){
-        return res.status(400).send(err);
+        return res.status(400).send("Fail");
     }
+
+    res.status(200).send("Success");
 
     var reference = req.body.Reference;
     var status = req.body.Status;
 
     Message.changeSMSStatusWithReference(reference,status,function(err,message){
-        if(err) return res.status(400).send("Fail");
-        if(message) return res.status(200).send("Success");
+        if(err){
+            console.log("Unable to update the sms status with reference" + reference);
+        }
+        if(message){
+            console.log("Updated sms status with reference" + reference);
+        }
     });
   }
 };

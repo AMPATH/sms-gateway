@@ -52,6 +52,11 @@ describe('Receipt Controller', function(){
         "Status" : "",
     };
 
+    var missingReferenceUpdateData = {
+            "Reference" : "",
+            "Status" : "Delivered",
+        };
+
     var invalidReferenceStatusUpdateData = {
         "Reference" : "blah",
         "Status" : "Delivered",
@@ -89,14 +94,14 @@ describe('Receipt Controller', function(){
              });
     });
 
-    it('should not update the message status when an valid delivery update is received with an invalid reference',function(done){
+    it('should not update the message status when an in valid delivery update is received with missing reference',function(done){
                  var msg = new Message(data);
                  msg.save(function(err,m){
                     expect(err).to.be(null);
 
                     request(app)
                     .post('/receipt')
-                    .send(invalidReferenceStatusUpdateData)
+                    .send(missingReferenceUpdateData)
                     .expect(400)
                     .end(function(err, res){
                         if (err) return done(err);

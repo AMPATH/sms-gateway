@@ -12,7 +12,21 @@ module.exports = function (app) {
     app.use('/', router);
 };
 
-
+/**
+ *  OPTIONS /receipt
+ *
+ *
+ * @param  {object} req  http request object
+ * @param  {object} res  http response object
+ * @param  {callback} next http callback for the next middleware or route
+ */
+router.options('/', function (req, res, next) {
+  console.log("OPTIONS IP: " + req.ip);
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+  return  res.status(200).send("");
+});
 
 /**
  * auth middleware responsible for doing basic authentication
