@@ -54,7 +54,7 @@ router.get('/applications', function (req, res, next) {
 router.get('/application/:name', function (req, res, next) {
     Application.findOne({name: req.params.name},function(err,application){
         if(application){
-            Message.find({appName: req.params.name},function(err,messagesSentByThisApp){
+            Message.find({appName: req.params.name}).sort({date: -1}).exec(function(err,messagesSentByThisApp){
 
                   if(messagesSentByThisApp){
                         messages = messagesSentByThisApp;
