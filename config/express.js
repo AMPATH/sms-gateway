@@ -18,12 +18,6 @@ module.exports = function(app, config, provider) {
 
   // app.use(favicon(config.root + '/public/img/favicon.ico'));
 
-  if (app.get('env') == 'production') {
-    app.use(logger('common', { skip: function(req, res) { return res.statusCode < 400; }, stream: __dirname + '/../logs/morgan.log' }));
-  } else {
-    app.use(logger('dev'));
-  }
-
   app.use(logger('dev'));
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({
